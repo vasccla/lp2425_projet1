@@ -12,8 +12,15 @@ def tri_joueurs_par_categories(fichier_csv):
     # Définition des catégories d'âge et de poids
     # Chaque catégorie a une plage d'âges et des intervalles de poids correspondants
     categories_age_poids = {
-        'Minime': {'age_min': 10, 'age_max': 12, 'poids': [(0,20), (20,25), (25,30)]},
-        'Junior': {'age_min': 13, 'age_max': 16, 'poids': [(0,40), (40,50), (50,60)]},
-        'Cadet': {'age_min': 17, 'age_max': 19, 'poids': [(0,60), (60,70), (70,80)]},
-        'Senior': {'age_min': 20, 'age_max': 100, 'poids': [(0,80), (80,90), (90,100)]},
+        'Poussin': {'age_min': 6, 'age_max': 7, 'poids': [(0,20), (20,25), (25,30), (30,35), (35,40), (40,45)]},
+        'Pupille': {'age_min': 8, 'age_max': 9, 'poids': [(0,25), (25,30), (30,35), (35,40), (40,45), (45,50)]},
+        'Benjamin': {'age_min': 10, 'age_max': 11, 'poids': [(0,30), (30,35), (35,40), (40,45), (45,50), (50,55)]},
+        'Minime': {'age_min': 12, 'age_max': 13, 'poids': [(0,35), (35,40), (40,45), (45,50), (50,55), (55,60), (60, 65)]},
+        'Cadet': {'age_min': 14, 'age_max': 15, 'poids': [(0,42), (42,47), (47,54), (54,60), (60,70)]},
+        'Junior': {'age_min': 16, 'age_max': 17, 'poids': [(0,48), (48,53), (53,59)]},
+        'Espoir': {'age_min': 18, 'age_max': 20, 'poids': [(0,50), (50,55), (55,61), (61,68), (68,75), (75,84)]},
+        'Senior': {'age_min': 18, 'age_max': 34, 'poids': [(0,50), (50,55), (55,61), (61,68), (68,75), (75,84)]},
+        'V1': {'age_min': 35, 'age_max': 45, 'poids': [(0,55), (55,61), (61,68), (68,75), (75,84)]},
+        'V2': {'age_min': 46, 'age_max': 55, 'poids': [(0,55), (55,61), (61,68), (68,75), (75,84)]},
+        'V3': {'age_min': 56, 'age_max': 65, 'poids': [(0,55), (55,61), (61,68), (68,75), (75,84)]},
     }
