@@ -43,10 +43,11 @@ def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
     joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
 
     # Affichage des joueurs par catégories d'âge et de poids
-    for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
-        print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
-        print(group[['nom', 'prenom', 'poids', 'age', 'club']], "\n")
+    # for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
+    #    print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
+    #    print(group[['nom', 'prenom', 'poids', 'age', 'club']], "\n")
         
     return joueurs
+
 
 joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
