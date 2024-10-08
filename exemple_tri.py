@@ -1,5 +1,6 @@
 # Utilisation de pandas pour une manipulation plus simple et plus flexible des données contrairement à csv
 import pandas as pd
+import random 
 
 def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
 
@@ -50,4 +51,11 @@ def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
     return joueurs
 
 
-joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
+def organiser_et_afficher_matchs_par_categories(joueurs):
+    # Si le nombre de joueurs est impair, attribuer un "bye"
+        if len(joueurs) % 2 != 0:
+            joueur_bye = random.choice(joueurs.index)
+            print(f"Bye pour : {joueurs.loc[joueur_bye]['nom']} {joueurs.loc[joueur_bye]['prenom']}")
+            joueurs = joueurs.drop(joueur_bye)
+
+# joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
