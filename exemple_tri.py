@@ -25,31 +25,4 @@ def tri_joueurs_par_categories(fichier_csv):
         'V3': {'age_min': 56, 'age_max': 65, 'poids': [(0,55), (55,61), (61,68), (68,75), (75,84)]},
     }
 
-    # Fonction pour attribuer une catégorie d'âge et de poids à chaque joueurs
-    def assigner_categorie(joueur):
-        age, poids = joueur['age'], joueur['poids']
-
-        for cat, details in categories_age_poids.items():
-            # Vérifier si l'âge du joueur est dans les limites de la catégorie
-            if details['age_min'] <= age <= details['age_max']:
-                # Vérifier si le poids du joueur est dans les limites de la catégorie
-                for poids_min, poids_max in details['poids']:
-                    if poids_min <= poids <= poids_max:
-                        # Retourne la catégorie correspondante
-                        return cat, f'{poids_min}-{poids_max}kg'
-        return None, None
-
-    # Assignation des catégories à chaque joueur
-    # On applique la fonction assigner_categorie à chaque ligne de "joueurs"
-    # On le réalise ligne par ligne "axis=1" et non par colonne "axis=0"
-    # Si la fonction renvoie une liste ou un tuple pour chaque ligne,  'expand' va étendre la sortie sur plusieurs colonnes 
-    joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
-
-    # Affichage des joueurs par catégories d'âge et de poids
-    for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
-        print(f"Joueurs dans la catégorie {cat_age} {cat_poids}:")
-        print(group[['nom', 'prenom', 'poids', 'age', 'club']])
-        
-    return joueurs
-
-joueur = tri_joueurs_par_categories('joueur.csv')
+    
