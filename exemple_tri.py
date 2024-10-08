@@ -55,7 +55,7 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
     # Si le nombre de joueurs est impair, attribuer un "bye"
         if len(joueurs) % 2 != 0:
             joueur_bye = random.choice(joueurs.index)
-            print(f"Bye pour : {joueurs.loc[joueur_bye]['nom']} {joueurs.loc[joueur_bye]['prenom']}")
+            print(f"Bye pour : {joueurs['nom'][joueur_bye]} {joueurs['prenom'][joueur_bye]}")
             joueurs = joueurs.drop(joueur_bye)
 
 # joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
