@@ -51,11 +51,6 @@ def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
     return joueurs
 
 def organiser_et_afficher_matchs_par_categories(joueurs):
-    
-    # Organiser les matchs dans chaque catégorie
-    def organiser_matchs(joueurs):
-        matchs = []
-        joueur_bye = None
         
         # Si le nombre de joueurs est impair, attribuer un "bye"
         if len(joueurs) % 2 != 0:
@@ -63,20 +58,7 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
             print(f"Bye pour : {joueurs['nom'][joueur_bye]} {joueurs['prenom'][joueur_bye]}")
             joueurs = joueurs.drop(joueur_bye)
 
-        # Créer les matchs
-        for i in range(0, len(joueurs), 2):
-            j1, j2 = joueurs.iloc[i], joueurs.iloc[i + 1]
-            matchs.append((j1['nom'], j2['nom']))
         
-        return matchs
-
-    # Grouper par catégories et organiser les matchs
-    for (cat_age, cat_poids), joueurs in joueurs.groupby(['categorie_age', 'categorie_poids']):
-        print(f"\nMatchs pour la catégorie {cat_age} {cat_poids}:")
-        matchs = organiser_matchs(joueurs)
-        for j1, j2 in matchs:
-            print(f"Match: {j1} vs {j2}")
 
 
 joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
-organiser_et_afficher_matchs_par_categories(joueur)
