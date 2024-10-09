@@ -59,10 +59,16 @@ def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
 
 
 def organiser_et_afficher_matchs_par_categories(joueurs):
+    # Groupement des joueurs par catégories d'âge et de poids
+    groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
+
+    for (cat_age, cat_poids), joueurs in groupes:
+        print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
         temp_pile:Pile = Pile()
         temp_file:File = File()
         tabMatch:list = []
-    # Si le nombre de joueurs est impair, attribuer un "bye"
+
+        # Si le nombre de joueurs est impair, attribuer un "bye"
         if len(joueurs) % 2 != 0:
             joueur_bye = random.choice(joueurs.index)
             print(f"Bye pour : {joueurs['nom'][joueur_bye]} {joueurs['prenom'][joueur_bye]}")
