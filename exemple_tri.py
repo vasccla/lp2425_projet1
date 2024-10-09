@@ -44,11 +44,17 @@ def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
     # Si la fonction renvoie une liste ou un tuple pour chaque ligne,  'expand' va étendre la sortie sur plusieurs colonnes 
     joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
 
+    # Calcul du nombre de joueurs par club dans chaque catégorie
+    joueurs['nb_joueurs_club'] = joueurs.groupby(['categorie_age', 'categorie_poids', 'club'])['nom'].transform('count')
+
+
     # Affichage des joueurs par catégories d'âge et de poids
-    # for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
-    #    print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
-    #    print(group[['nom', 'prenom', 'poids', 'age', 'club']], "\n")
-        
+    
+    for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
+        group = group.sort_values(by='nb_joueurs_club', ascending=False)
+        print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
+        print(group[['nom', 'prenom', 'poids', 'age', 'club', 'nb_joueurs_club']],'\n')
+    
     return joueurs
 
 
