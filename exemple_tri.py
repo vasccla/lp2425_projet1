@@ -1,7 +1,8 @@
 # Utilisation de pandas pour une manipulation plus simple et plus flexible des données contrairement à csv
 import pandas as pd
-import random 
-
+import random
+from Class.File import File
+from Class.Pile import Pile
 def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
 
     # Lecture du fichier csv avec les joueurs
@@ -52,10 +53,27 @@ def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
 
 
 def organiser_et_afficher_matchs_par_categories(joueurs):
+        temp_pile:Pile = Pile()
+        temp_file:File = File()
+        tabMatch:list = []
     # Si le nombre de joueurs est impair, attribuer un "bye"
         if len(joueurs) % 2 != 0:
             joueur_bye = random.choice(joueurs.index)
             print(f"Bye pour : {joueurs['nom'][joueur_bye]} {joueurs['prenom'][joueur_bye]}")
             joueurs = joueurs.drop(joueur_bye)
+        # Remplissage de la file avec les données joueurs à partir du début de la DF
+        for i in range(0, len(joueurs)//2):
+            temp_file.emfiler([joueurs["nom"].iloc[i],joueurs["prenom"].iloc[i],joueurs["club"].iloc[i]])
+        # Remplissage de la pile avec les données joueurs à partir de la moitié de la DF
+        for i in range(len(joueurs)//2,len(joueurs)):
+            temp_pile.empiler([joueurs["nom"].iloc[i],joueurs["prenom"].iloc[i],joueurs["club"].iloc[i]])
+        # print("Affichage file (length : %s) : %s \n Affichage pile (length : %s) : %s" % (len(temp_file.afficher()),temp_file.afficher(),len(temp_pile.afficher()),temp_pile.afficher()))    
+        # Association du premier joueur avec le dernier joueur et ainsi de suite
+        while len(temp_file.afficher()) != 0 and len(temp_pile.afficher()) != 0:
+            tabMatch.append([temp_file.defiler(),temp_pile.depiler()])
+        # Affichage des matchs
+        for j in range(0,len(tabMatch),1):
+            print("%s %s vs %s %s" % (tabMatch[j][0][0],tabMatch[j][0][1],tabMatch[j][1][0],tabMatch[j][1][1]))
 
-# joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
+joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
+organiser_et_afficher_matchs_par_categories(joueur)
