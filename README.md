@@ -2,5 +2,4 @@
 
 *Licence Pro 2024-2025*
 
-Essai2
-Essai3
+Ce projet consiste en une génération d'un calendrier de rencontres sportives entre joueurs selon leurs catégories et leurs appartenances à un club.
