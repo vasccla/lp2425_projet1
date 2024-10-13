@@ -6,30 +6,34 @@ from Class.Pile import Pile
 def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
 
     # Lecture du fichier csv avec les joueurs
-    joueurs = pd.read_csv(fichier_joueurs)
+    joueurs = pd.read_csv(fichier_joueurs) # On met le résultat de la requête dans une variable 'joueurs' de type DataFrame
 
     if joueurs.empty:
         print("Le fichier CSV est vide ou non valide.")
         return None
     
-    categories = pd.read_csv(fichier_categories)
+    # Lecture du fichier csv avec les catégories
+    categories = pd.read_csv(fichier_categories) # On met le résultat de la requête dans une variable 'categories' de type DataFrame
 
     if categories.empty:
         print("Le fichier CSV est vide ou non valide.")
         return None
 
-    # ATTRIBUTION CATEGORIE D'AGE ET DE POIDS POUR CHAQUES JOUEURS
-
-    # On commence par extraire l'âge et le poids du joueur.
-    # Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids, on vérifie si l'âge
-    # du joueur se situe dans les limites de la catégorie.
-    # Si c'est le cas, on parcourt les plages de poids associées à cette catégories pour déterminer si 
-    # le poids du joueur est compris dans l'une d'elles.
-    # Si les 2 conditions sont réunis, on retourne la catégorie d'âge et la plage de poids sous la forme
-    # "20-25kg"
-    # Si il n'y a aucune correspondance, on retourne None, None
+    
 
     def assigner_categorie(joueur):
+        """
+            ATTRIBUTION CATEGORIE D'AGE ET DE POIDS POUR CHAQUES JOUEURS
+
+            On commence par extraire l'âge et le poids du joueur.
+            Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids, on vérifie si l'âge
+            du joueur se situe dans les limites de la catégorie.
+            Si c'est le cas, on parcourt les plages de poids associées à cette catégories pour déterminer si 
+            le poids du joueur est compris dans l'une d'elles.
+            Si les 2 conditions sont réunis, on retourne la catégorie d'âge et la plage de poids sous la forme
+            '20-25kg'
+            Si il n'y a aucune correspondance, on retourne None, None
+        """
         age, poids = joueur['age'], joueur['poids']
 
         for _, row in categories.iterrows():
@@ -52,8 +56,11 @@ def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
     
     for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
         group = group.sort_values(by='nb_joueurs_club', ascending=False)
+        """
         print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
         print(group[['nom', 'prenom', 'poids', 'age', 'club', 'nb_joueurs_club']],'\n')
+        """
+        
     
     return joueurs
 
