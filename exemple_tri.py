@@ -1,5 +1,6 @@
 import random
 import sys
+
 import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
 
 from Class.File import File
@@ -8,14 +9,14 @@ from Class.Pile import Pile
 def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
 
     # Lecture du fichier csv avec les joueurs
-    joueurs = pd.read_csv(fichier_joueurs) # On met le résultat de la requête dans une variable 'joueurs' de type DataFrame
+    joueurs = pd.read_csv(fichier_joueurs) # On met le résultat dans la variable 'joueurs' de type DataFrame
 
     if joueurs.empty:
         print("Le fichier CSV est vide ou non valide.")
         return None
     
     # Lecture du fichier csv avec les catégories
-    categories = pd.read_csv(fichier_categories) # On met le résultat de la requête dans une variable 'categories' de type DataFrame
+    categories = pd.read_csv(fichier_categories) # On met le résultat dans la variable 'categories' de type DataFrame
 
     if categories.empty:
         print("Le fichier CSV est vide ou non valide.")
@@ -98,7 +99,7 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
             
         # Affichage des matchs
         for j in range(0,len(tab_match),1):
-            print("%s %s vs %s %s" % (tab_match[j][0][0],tab_match[j][0][1],tab_match[j][1][0],tab_match[j][1][1]))
+            print(f"{tab_match[j][0][0]} {tab_match[j][0][1]} vs {tab_match[j][1][0]} {tab_match[j][1][1]}")
 
 
 
