@@ -1,8 +1,10 @@
-# Utilisation de pandas pour une manipulation plus simple et plus flexible des données contrairement à csv
-import pandas as pd
 import random
+
+import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
+
 from Class.File import File
 from Class.Pile import Pile
+
 def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
 
     # Lecture du fichier csv avec les joueurs
