@@ -1,5 +1,5 @@
 import random
-
+import sys
 import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
 
 from Class.File import File
@@ -21,22 +21,24 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
         print("Le fichier CSV est vide ou non valide.")
         return None
 
-    
+
 
     def assigner_categorie(joueur):
         """
             ATTRIBUTION CATEGORIE D'AGE ET DE POIDS POUR CHAQUES JOUEURS
 
             On commence par extraire l'âge et le poids du joueur.
-            Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids, on vérifie si l'âge
-            du joueur se situe dans les limites de la catégorie.
-            Si c'est le cas, on parcourt les plages de poids associées à cette catégories pour déterminer si 
+            Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids,
+            on vérifie si l'âge du joueur se situe dans les limites de la catégorie.
+            Si c'est le cas, on parcourt les plages de poids associées à cette
+            catégories pour déterminer si 
             le poids du joueur est compris dans l'une d'elles.
-            Si les 2 conditions sont réunis, on retourne la catégorie d'âge et la plage de poids sous la forme
-            '20-25kg'
+            Si les 2 conditions sont réunis, on retourne la catégorie d'âge et
+            la plage de poids sous la forme '20-25kg'
             Si il n'y a aucune correspondance, on retourne None, None
         """
-        age, poids = joueur['age'], joueur['poids']
+        age:int = joueur['age']
+        poids:float = joueur['poids']
 
         for _, row in categories.iterrows():
             if row['age_min'] <= age <= row['age_max']:
@@ -62,8 +64,6 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
         print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
         print(group[['nom', 'prenom', 'poids', 'age', 'club', 'nb_joueurs_club']],'\n')
         """
-        
-    
     return joueurs
 
 
@@ -100,5 +100,10 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
         for j in range(0,len(tab_match),1):
             print("%s %s vs %s %s" % (tab_match[j][0][0],tab_match[j][0][1],tab_match[j][1][0],tab_match[j][1][1]))
 
-joueur = lecture_joueurs_et_categories('joueur.csv', 'categorie.csv')
-organiser_et_afficher_matchs_par_categories(joueur)
+
+
+def main():
+    joueur = lecture_joueurs_et_categories('joueur.csv', 'categorie.csv')
+    organiser_et_afficher_matchs_par_categories(joueur)
+
+main()
