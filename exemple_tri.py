@@ -5,7 +5,7 @@ import pandas as pd # Utilisation de pandas pour une manipulation plus simple et
 from Class.File import File
 from Class.Pile import Pile
 
-def tri_joueurs_par_categories(fichier_joueurs, fichier_categories):
+def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
 
     # Lecture du fichier csv avec les joueurs
     joueurs = pd.read_csv(fichier_joueurs) # On met le résultat de la requête dans une variable 'joueurs' de type DataFrame
