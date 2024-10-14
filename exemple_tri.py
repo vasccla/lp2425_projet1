@@ -47,9 +47,9 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
                 
         return None, None
 
-    # On applique la fonction assigner_categorie à chaque ligne du DataFrame "joueurs", issue de la lecture du fichier csv
+    # On applique la fonction assigner_categorie à chaque ligne du DataFrame "joueurs"
     # On le réalise ligne par ligne "axis=1" et non par colonne "axis=0"
-    # Si la fonction renvoie une liste ou un tuple pour chaque ligne,  'expand' va étendre la sortie sur plusieurs colonnes 
+    # Si la fonction renvoie une liste ou un tuple pour chaque ligne, 'expand' va étendre la sortie sur plusieurs colonnes
     joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
 
     # Calcul du nombre de joueurs par club dans chaque catégorie
@@ -103,7 +103,7 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
 
 
 def main():
-    joueur = lecture_joueurs_et_categories('joueur.csv', 'categorie.csv')
+    joueur = lecture_joueurs_et_categories(sys.argv[1], sys.argv[2])
     organiser_et_afficher_matchs_par_categories(joueur)
 
 main()
