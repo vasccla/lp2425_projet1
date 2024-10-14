@@ -3,3 +3,6 @@
 *Licence Pro 2024-2025*
 
 Ce projet consiste en une génération d'un calendrier de rencontres sportives entre joueurs selon leurs catégories et leurs appartenances à un club.
+
+Commande pour éxécuter le programme :
+`python .\exemple_tri.py {fichier joueur} {fichier catégorie}`
