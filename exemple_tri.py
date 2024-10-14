@@ -75,7 +75,7 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
         print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
         temp_pile:Pile = Pile()
         temp_file:File = File()
-        tabMatch:list = []
+        tab_match:list = []
 
         # Si le nombre de joueurs est impair, attribuer un "bye"
         if len(joueurs) % 2 != 0:
@@ -94,11 +94,11 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
 
         # Association du premier joueur avec le dernier joueur et ainsi de suite
         while len(temp_file.afficher()) != 0 and len(temp_pile.afficher()) != 0:
-            tabMatch.append([temp_file.defiler(),temp_pile.depiler()])
+            tab_match.append([temp_file.defiler(),temp_pile.depiler()])
             
         # Affichage des matchs
-        for j in range(0,len(tabMatch),1):
-            print("%s %s vs %s %s" % (tabMatch[j][0][0],tabMatch[j][0][1],tabMatch[j][1][0],tabMatch[j][1][1]))
+        for j in range(0,len(tab_match),1):
+            print("%s %s vs %s %s" % (tab_match[j][0][0],tab_match[j][0][1],tab_match[j][1][0],tab_match[j][1][1]))
 
-joueur = tri_joueurs_par_categories('joueur.csv', 'categorie.csv')
+joueur = lecture_joueurs_et_categories('joueur.csv', 'categorie.csv')
 organiser_et_afficher_matchs_par_categories(joueur)
