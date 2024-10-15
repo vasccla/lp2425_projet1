@@ -154,7 +154,7 @@ def main():
         
         joueur = lecture_joueurs_et_categories(sys.argv[1], sys.argv[2])
         if joueur is not None:
-            match = organiser_et_afficher_matchs_par_categories(joueur)
+            match = organiser_matchs_par_categories(joueur)
             afficher_matchs(match)
     except Exception as e:
         print(f"Erreur dans l'execution du programme : {e}")
