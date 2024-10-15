@@ -8,20 +8,34 @@ from Class.Pile import Pile
 
 def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
 
-    # Lecture du fichier csv avec les joueurs
-    joueurs = pd.read_csv(fichier_joueurs) # On met le résultat dans la variable 'joueurs' de type DataFrame
-
-    if joueurs.empty:
-        print("Le fichier CSV est vide ou non valide.")
+    try:
+            # Lecture du fichier csv avec les joueurs
+        joueurs = pd.read_csv(fichier_joueurs) # On met le résultat dans la variable 'joueurs' de type DataFrame
+    
+    except FileNotFoundError:
+        print(f"Erreur : Le fichier {fichier_joueurs} n'a pas été trouvé.")
+        return None
+    except pd.errors.EmptyDataError:
+        print(f"Erreur : Le fichier {fichier_joueurs} est vide ou corrompu.")
+        return None
+    except Exception as e:
+        print(f"Erreur lors de la lecture du fichier joueurs : {e}")
         return None
     
-    # Lecture du fichier csv avec les catégories
-    categories = pd.read_csv(fichier_categories) # On met le résultat dans la variable 'categories' de type DataFrame
-
-    if categories.empty:
-        print("Le fichier CSV est vide ou non valide.")
+    try:
+            # Lecture du fichier csv avec les catégories
+        categories = pd.read_csv(fichier_categories) # On met le résultat dans la variable 'categories' de type DataFrame
+    
+    except FileNotFoundError:
+        print(f"Erreur : Le fichier {fichier_categories} n'a pas été trouvé.")
         return None
-
+    except pd.errors.EmptyDataError:
+        print(f"Erreur : Le fichier {fichier_categories} est vide ou corrompu.")
+        return None
+    except Exception as e:
+        print(f"Erreur lors de la lecture du fichier joueurs : {e}")
+        return None
+    
 
     """ On commence par extraire l'âge et le poids du joueur.
      Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids, on vérifie si l'âge
@@ -60,18 +74,20 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
      On le réalise ligne par ligne "axis=1" et non par colonne "axis=0"
      Si la fonction renvoie une liste ou un tuple pour chaque ligne,  'expand' va étendre la sortie sur plusieurs colonnes """
 
+    try:
+        joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
 
-    joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
-
-    # Calcul du nombre de joueurs par club dans chaque catégorie
-    joueurs['nb_joueurs_club'] = joueurs.groupby(['categorie_age', 'categorie_poids', 'club'])['nom'].transform('count')
-
+        # Calcul du nombre de joueurs par club dans chaque catégorie
+        joueurs['nb_joueurs_club'] = joueurs.groupby(['categorie_age', 'categorie_poids', 'club'])['nom'].transform('count')
+    except Exception as e:
+        print(f"Erreur lors du traitement des joueurs : {e}")
+        return None
 
     # Affichage des joueurs par catégories d'âge et de poids
-    
+    """
     for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
         group = group.sort_values(by='nb_joueurs_club', ascending=False)
-        """
+        
         print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
         print(group[['nom', 'prenom', 'poids', 'age', 'club', 'nb_joueurs_club']],'\n')
         """
@@ -114,7 +130,17 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
 
 
 def main():
-    joueur = lecture_joueurs_et_categories(sys.argv[1], sys.argv[2])
-    organiser_et_afficher_matchs_par_categories(joueur)
+    try:
+        if len(sys.argv) < 3:
+            print("Erreur: Veuillez fournir deux fichiers CSV comme arguments.")
+            print("Usage: Python exemple_tri.py <fichier_joueurs> <fichier_categories>")
+            sys.exit(1)
+        
+        joueur = lecture_joueurs_et_categories(sys.argv[1], sys.argv[2])
+        if joueur is not None:
+            organiser_et_afficher_matchs_par_categories(joueur)
+    except Exception as e:
+        print(f"Erreur dans l'execution du programme : {e}")
 
-main()
+if __name__ == "__main__":
+    main()
