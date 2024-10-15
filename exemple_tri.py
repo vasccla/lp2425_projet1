@@ -94,21 +94,23 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     return joueurs
 
 
-def organiser_et_afficher_matchs_par_categories(joueurs):
+def organiser_matchs_par_categories(joueurs):
     # Groupement des joueurs par catégories d'âge et de poids
     groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
+    matchs_par_categorie = {}
 
     for (cat_age, cat_poids), joueurs in groupes:
-        print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
         temp_pile:Pile = Pile()
         temp_file:File = File()
         tab_match:list = []
+        bye_list = [] # Liste pour stocker les byes
 
         # Si le nombre de joueurs est impair, attribuer un "bye"
         if len(joueurs) % 2 != 0:
-            joueur_bye = random.choice(joueurs.index)
-            print(f"Bye pour : {joueurs['nom'][joueur_bye]} {joueurs['prenom'][joueur_bye]}")
-            joueurs = joueurs.drop(joueur_bye)
+            joueur_bye_index = random.choice(joueurs.index)
+            joueur_bye = joueurs.loc[joueur_bye_index]
+            bye_list.append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
+            joueurs = joueurs.drop(joueur_bye_index)
 
         # Remplissage de la file avec les données joueurs à partir du début de la DF
         for i in range(0, len(joueurs)//2):
@@ -122,10 +124,24 @@ def organiser_et_afficher_matchs_par_categories(joueurs):
         # Association du premier joueur avec le dernier joueur et ainsi de suite
         while len(temp_file.afficher()) != 0 and len(temp_pile.afficher()) != 0:
             tab_match.append([temp_file.defiler(),temp_pile.depiler()])
+            # Sauvegarde des matchs pour cette catégorie
+        matchs_par_categorie[(cat_age, cat_poids)] = {
+            "matches": tab_match,
+            "byes": bye_list
+        }
+    return matchs_par_categorie
             
-        # Affichage des matchs
-        for j in range(0,len(tab_match),1):
-            print(f"{tab_match[j][0][0]} {tab_match[j][0][1]} vs {tab_match[j][1][0]} {tab_match[j][1][1]}")
+def afficher_matchs(matchs_par_categorie):
+    for(cat_age, cat_poids), data in matchs_par_categorie.items():
+        print(f"\nMatchs pour la catégorie {cat_age} {cat_poids} : ")
+
+        for match in data['matches']:
+            j1 = f"{match[0][0]} {match[0][1]} ({match[0][2]})"
+            j2 = f"{match[1][0]} {match[1][1]} ({match[1][2]})"
+            print(f"{j1} VS {j2}")
+        
+        if data['byes']:
+            print("Byes : "+", ".join(data['byes']))
 
 
 
@@ -138,7 +154,8 @@ def main():
         
         joueur = lecture_joueurs_et_categories(sys.argv[1], sys.argv[2])
         if joueur is not None:
-            organiser_et_afficher_matchs_par_categories(joueur)
+            match = organiser_et_afficher_matchs_par_categories(joueur)
+            afficher_matchs(match)
     except Exception as e:
         print(f"Erreur dans l'execution du programme : {e}")
 
