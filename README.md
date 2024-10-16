@@ -4,13 +4,14 @@
 
 Ce projet consiste en une génération d'un calendrier de rencontres sportives entre joueurs selon leurs catégories et leurs appartenances à un club.
 
-Préréquis : 
-Pour bien utiliser le document, assurez vous de bien avoir installer pandas.'
-`Assurez vous que pip est bien insstallé : pip --version`
-`pip install pandas`
+## PRÉRÉQUIS : 
 
-Pour la lecture de fichier .ods, veuillez installer odfpy.
-`pip install odfpy`
+Pour bien utiliser le document, assurez vous de bien avoir installer pandas.
+Assurez vous que pip soit bien installé : `pip --version`
+
+Installer pandas via la commande : `pip install pandas`
+
+Pour la lecture de fichier .ods, veuillez installer odfpy : `pip install odfpy`
 
 
 ## UTILISATION : 
