@@ -6,6 +6,29 @@ import pandas as pd # Utilisation de pandas pour une manipulation plus simple et
 from Class.File import File
 from Class.Pile import Pile
 
+"""
+Le fichier csv des joueurs sera générer par la fonction ci-dessous.
+Si le fichier n'existe pas, il sera créer.
+Si des joueurs sont rajouter dans le fichier ods dans l'avenir, les données du fichier csv seront écrasés et le fichier sera remis à jour.
+"""
+
+def lire_joueur_ods(fichier_ods: str, nom_feuille: str):
+    # Lire la feuille spécifiée en tant que DataFrame
+    df = pd.read_excel(fichier_ods, sheet_name=nom_feuille)
+
+    # Sélectionner les colonnes souhaitées
+    colonnes_souhaitees = ['NOM', 'PRÉNOM', 'POIDS', 'AGE', 'CLUB'] # Remplacez par les noms réels de vos colonnes
+    df_selection = df[colonnes_souhaitees].copy()
+
+    # Modifier les noms des colonnes
+    noms_nouveaux = {'NOM': 'nom', 'PRÉNOM': 'prenom', 'POIDS': 'poids', 'AGE': 'age', 'CLUB': 'club'} # Remplacez par vos nouveaux noms
+    df_selection.rename(columns=noms_nouveaux, inplace=True)
+
+    # Enregistrer le DataFrame filtré avec les nouveaux noms en CSV
+    csv_file_path = f"joueur.csv"
+    df_selection.to_csv(csv_file_path, index=False)
+    return csv_file_path
+
 def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
 
     try:
@@ -149,12 +172,17 @@ def main():
     try:
         if len(sys.argv) < 3:
             print("Erreur: Veuillez fournir deux fichiers CSV comme arguments.")
-            print("Usage: Python exemple_tri.py <fichier_joueurs> <fichier_categories>")
+            print("Usage: Python exemple_tri.py <fichier_ods> <fichier_categories>")
             sys.exit(1)
+
+        fichier_ods = sys.argv[1]
+        fichier_categorie = sys.argv[2]
+        fichier_joueur = lire_joueur_ods(fichier_ods, 'data') 
         
-        joueur = lecture_joueurs_et_categories(sys.argv[1], sys.argv[2])
-        if joueur is not None:
-            match = organiser_matchs_par_categories(joueur)
+        joueurs = lecture_joueurs_et_categories(fichier_joueur, fichier_categorie)
+
+        if joueurs is not None:
+            match = organiser_matchs_par_categories(joueurs)
             afficher_matchs(match)
     except Exception as e:
         print(f"Erreur dans l'execution du programme : {e}")
