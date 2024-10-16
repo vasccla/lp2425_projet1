@@ -9,5 +9,8 @@ Pour bien utiliser le document, assurez vous de bien avoir installer pandas.'
 `Assurez vous que pip est bien insstallé : pip --version`
 `pip install pandas`
 
+Pour la lecture de fichier .ods, veuillez installer odfpy.
+`pip install odfpy`
+
 Commande pour éxécuter le programme :
-`python .\exemple_tri.py {fichier joueur} {fichier catégorie}`
+`python .\exemple_tri.py {fichier_ods_} {fichier catégorie}`
