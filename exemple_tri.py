@@ -176,10 +176,10 @@ def main():
             sys.exit(1)
 
         fichier_ods = sys.argv[1]
-        fichier_categorie = sys.argv[2]
-        fichier_joueur = lire_joueur_ods(fichier_ods, 'data') 
+        nom_feuille = sys.argv[2]
+        fichier_joueur = lire_joueur_ods(fichier_ods, nom_feuille) 
         
-        joueurs = lecture_joueurs_et_categories(fichier_joueur, fichier_categorie)
+        joueurs = lecture_joueurs_et_categories(fichier_joueur, 'categorie.csv')
 
         if joueurs is not None:
             match = organiser_matchs_par_categories(joueurs)
