@@ -12,5 +12,8 @@ Pour bien utiliser le document, assurez vous de bien avoir installer pandas.'
 Pour la lecture de fichier .ods, veuillez installer odfpy.
 `pip install odfpy`
 
-Commande pour éxécuter le programme :
-`python .\exemple_tri.py {fichier_ods_} {fichier catégorie}`
+
+## UTILISATION : 
+
+Pour générer les matchs, il vous faut insérer la liste des joueurs qui participent au tournoi. Exécutez le script exemple_tri.py en rentrant en paramètre le nom de votre fichier .ods ainsi que la feuille de calcul contenant la liste des joueurs.
+`python3 .\exemple_tri.py {fichier_ods} {feuille_de_calcul}`
