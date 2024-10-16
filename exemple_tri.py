@@ -156,16 +156,18 @@ def organiser_matchs_par_categories(joueurs):
             
 def afficher_matchs(matchs_par_categorie):
     for(cat_age, cat_poids), data in matchs_par_categorie.items():
-        print(f"\nMatchs pour la catégorie {cat_age} {cat_poids} : ")
+        print(f"\n{'=' * 40}")
+        print(f"Matchs pour la catégorie {cat_age} {cat_poids} : ")
+        print(f"{'=' * 40}")
 
         for match in data['matches']:
             j1 = f"{match[0][0]} {match[0][1]} ({match[0][2]})"
             j2 = f"{match[1][0]} {match[1][1]} ({match[1][2]})"
-            print(f"{j1} VS {j2}")
+            print(f"{j1:<30} VS {j2:<30}")
         
         if data['byes']:
             print("Byes : "+", ".join(data['byes']))
-
+        print(f"{'=' * 40}")
 
 
 def main():
