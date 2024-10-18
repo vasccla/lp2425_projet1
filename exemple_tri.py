@@ -162,17 +162,17 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
         for _, row in categories.iterrows():
             if row['age_min'] <= age <= row['age_max']:
                 if poids <= row['poids_max']:
-                    categorie_assignée = row['categorie']
+                    categorie_assignee = row['categorie']
                     plage_poids = f"{row['poids_min']}-{row['poids_max']}kg"
                     break  # Sortir de la boucle dès qu'on trouve la catégorie valide
                 else:
                     # On garde la catégorie si le poids dépasse
-                    categorie_assignée = row['categorie']
+                    categorie_assignee = row['categorie']
                     plage_poids = f"{row['poids_max']}kg+"
 
     # Si une catégorie a été assignée, retourner la catégorie et la plage de poids
-        if categorie_assignée:
-            return (categorie_assignée, plage_poids)
+        if categorie_assignee:
+            return (categorie_assignee, plage_poids)
 
         return None, None
 
