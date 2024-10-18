@@ -1,12 +1,13 @@
 import random
 import sys
-from collections import defaultdict
-
 import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
 
 from Class.Graphe import Graphe #Importation de la classe Graphe qui est implémenter dans Class/Graphe.py
+from Class.Pile import Pile
+from Class.File import File
 
-def recherche_largeur(graphe:Graphe(), source, puits, parent):
+
+def recherche_largeur(graphe:Graphe, source, puits, parent):
     visite = {source}
     file = [source]
 
@@ -22,7 +23,7 @@ def recherche_largeur(graphe:Graphe(), source, puits, parent):
                 file.append(voisin)
     return False
 
-def edmonds_karp(graphe:Graphe(), source, puits):
+def edmonds_karp(graphe:Graphe, source, puits):
     # Dictionnaire pour stocker le chemin parent pour la reconstruction des chemins
     parent = {}
     # Initialisation du flot maximum à 0
@@ -173,18 +174,42 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
         print(f"Erreur lors du traitement des joueurs : {e}")
         return None
 
-    # Affichage des joueurs par catégories d'âge et de poids
-    """
-    for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
-        group = group.sort_values(by='nb_joueurs_club', ascending=False)
-        
-        print(f"Joueur(s) dans la catégorie {cat_age} {cat_poids}:")
-        print(group[['nom', 'prenom', 'poids', 'age', 'club', 'nb_joueurs_club']],'\n')
-        """
     return joueurs
 
 
-def organiser_matchs_par_categories(joueurs):
+def organiser_matchs_par_tri_simple(joueurs):
+    # Groupement des joueurs par catégories d'âge et de poids
+    groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
+    tous_les_matchs = []  # Liste pour stocker tous les matchs
+
+    for (cat_age, cat_poids), joueurs in groupes:
+        temp_pile = Pile()
+        temp_file = File()
+        tabMatch = []
+
+        if len(joueurs) % 2 != 0:
+            joueur_bye = random.choice(joueurs.index)
+            print(f"Bye pour : {joueurs['nom'][joueur_bye]} {joueurs['prenom'][joueur_bye]}")
+            joueurs = joueurs.drop(joueur_bye)
+
+        # Remplissage de la file avec les données joueurs à partir du début de la DF
+        for i in range(0, len(joueurs) // 2):
+            temp_file.emfiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])
+        # Remplissage de la pile avec les données joueurs à partir de la moitié de la DF
+        for i in range(len(joueurs) // 2, len(joueurs)):
+            temp_pile.empiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])
+
+        while len(temp_file.afficher()) != 0 and len(temp_pile.afficher()) != 0:
+            tabMatch.append([temp_file.defiler(), temp_pile.depiler()])
+
+        # Ajouter les matchs de cette catégorie à la liste globale
+        tous_les_matchs.append((cat_age, cat_poids, tabMatch))
+
+    return tous_les_matchs
+
+    
+
+def organiser_matchs_par_edmond(joueurs):
     # Groupement des joueurs par catégories d'âge et de poids
     groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
     matchs_par_categorie = {}
@@ -247,8 +272,18 @@ def organiser_matchs_par_categories(joueurs):
             "byes": bye_list
         }
     return matchs_par_categorie
-            
-def afficher_matchs(matchs_par_categorie):
+
+
+
+def afficher_matchs_tri_simple(matchs):
+    for cat_age, cat_poids, tabMatch in matchs:
+            print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
+            for j in tabMatch:
+                print(f"{j[0][0]} {j[0][1]} vs {j[1][0]} {j[1][1]}")
+
+
+
+def afficher_matchs_edmonds(matchs_par_categorie):
     for (cat_age, cat_poids), data in matchs_par_categorie.items():
         print(f"\n{'=' * 40}")
         print(f"Matchs pour la catégorie {cat_age} {cat_poids} : ")
@@ -279,8 +314,29 @@ def main():
         joueurs = lecture_joueurs_et_categories(fichier_joueur, 'categorie.csv')
 
         if joueurs is not None:
-            match = organiser_matchs_par_categories(joueurs)
-            afficher_matchs(match)
+            while True:
+                print("Menu : ")
+                print("1. Géneration de matchs par tri simple")
+                print("2. Géneration de matchs par l'algorithme d'Edmond")
+                print("3. Quitter")
+
+                choix = input("Veuillez entrer votre choix (1-3) : ")
+
+                if choix == '1':
+                    match = organiser_matchs_par_tri_simple(joueurs)
+                    afficher_matchs_tri_simple(match)
+
+                elif choix == '2':
+                    match = organiser_matchs_par_edmond(joueurs)
+                    afficher_matchs_edmonds(match)
+
+                elif choix == '3':
+                    print("Au revoir !")
+                    break
+                
+                else:
+                    print("Choix invalide, veuillez réessayer.")
+
     except Exception as e:
         print(f"Erreur dans l'execution du programme : {e}")
 
