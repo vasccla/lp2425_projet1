@@ -1,29 +1,12 @@
 import random
 import sys
 from collections import defaultdict
+
 import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
 
-class Graphe:
-    "La classe représente un graphe à l'aide d'une liste d'adjacence."
+from Class.Graphe import Graphe #Importation de la classe Graphe qui est implémenter dans Class/Graphe.py
 
-    def __init__(self):
-        self.liste_adjacence = defaultdict(dict)
-    
-    def ajouter_arete(self, sommet_depart, sommet_arrivee, capacite):
-        """
-        Ajout d'une arête avec une capacité donnée.
-        :param sommet_depart: Le sommet de départ de l'arête
-        :param sommet_arrivee: Le sommet d'arriver de l'arête
-        :param capacite: La capacité de l'arête
-        """
-
-        self.liste_adjacence[sommet_depart][sommet_arrivee] = capacite
-        self.liste_adjacence[sommet_arrivee][sommet_depart] = 0
-
-    def obtenir_voisins(self, sommet):
-        return self.liste_adjacence[sommet].keys()
-
-def recherche_largeur(graphe, source, puits, parent):
+def recherche_largeur(graphe:Graphe(), source, puits, parent):
     visite = {source}
     file = [source]
 
@@ -39,7 +22,7 @@ def recherche_largeur(graphe, source, puits, parent):
                 file.append(voisin)
     return False
 
-def edmonds_karp(graphe, source, puits):
+def edmonds_karp(graphe:Graphe(), source, puits):
     # Dictionnaire pour stocker le chemin parent pour la reconstruction des chemins
     parent = {}
     # Initialisation du flot maximum à 0
