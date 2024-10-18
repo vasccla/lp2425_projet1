@@ -181,6 +181,7 @@ def organiser_matchs_par_tri_simple(joueurs):
     # Groupement des joueurs par catégories d'âge et de poids
     groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
     tous_les_matchs = []  # Liste pour stocker tous les matchs
+    byes_par_categorie = {}
 
     for (cat_age, cat_poids), joueurs in groupes:
         temp_pile = Pile()
@@ -188,9 +189,10 @@ def organiser_matchs_par_tri_simple(joueurs):
         tabMatch = []
 
         if len(joueurs) % 2 != 0:
-            joueur_bye = random.choice(joueurs.index)
-            print(f"Bye pour : {joueurs['nom'][joueur_bye]} {joueurs['prenom'][joueur_bye]}")
-            joueurs = joueurs.drop(joueur_bye)
+            joueur_bye_index = random.choice(joueurs.index)
+            joueur_bye = joueurs.loc[joueur_bye_index]
+            byes_par_categorie.setdefault((cat_age, cat_poids), []).append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
+            joueurs = joueurs.drop(joueur_bye_index)
 
         # Remplissage de la file avec les données joueurs à partir du début de la DF
         for i in range(0, len(joueurs) // 2):
@@ -205,7 +207,7 @@ def organiser_matchs_par_tri_simple(joueurs):
         # Ajouter les matchs de cette catégorie à la liste globale
         tous_les_matchs.append((cat_age, cat_poids, tabMatch))
 
-    return tous_les_matchs
+    return tous_les_matchs, byes_par_categorie
 
     
 
@@ -275,11 +277,14 @@ def organiser_matchs_par_edmond(joueurs):
 
 
 
-def afficher_matchs_tri_simple(matchs):
+def afficher_matchs_tri_simple(matchs, byes_par_categorie):
     for cat_age, cat_poids, tabMatch in matchs:
             print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
             for j in tabMatch:
-                print(f"{j[0][0]} {j[0][1]} vs {j[1][0]} {j[1][1]}")
+                print(f"{j[0][0]} {j[0][1]} ({j[0][2]}) vs {j[1][0]} {j[1][1]} ({j[1][2]})")
+            
+            if (cat_age, cat_poids) in byes_par_categorie:
+                print("Byes : " + ", ".join(byes_par_categorie[(cat_age, cat_poids)]))
 
 
 
@@ -323,8 +328,8 @@ def main():
                 choix = input("Veuillez entrer votre choix (1-3) : ")
 
                 if choix == '1':
-                    match = organiser_matchs_par_tri_simple(joueurs)
-                    afficher_matchs_tri_simple(match)
+                    match, byes = organiser_matchs_par_tri_simple(joueurs)
+                    afficher_matchs_tri_simple(match, byes)
 
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
