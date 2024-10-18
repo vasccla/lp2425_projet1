@@ -85,7 +85,7 @@ Si des joueurs sont rajouter dans le fichier ods dans l'avenir, les données du 
 """
 
 def lire_joueur_ods(fichier_ods: str, nom_feuille: str):
-    # Lire la feuille spécifiée en tant que DataFrame
+    # Lire la feuille spécifiée en tant que DataFrameg
     df = pd.read_excel(fichier_ods, sheet_name=nom_feuille)
 
     # Sélectionner les colonnes souhaitées
