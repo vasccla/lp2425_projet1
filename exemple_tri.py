@@ -1,10 +1,82 @@
 import random
 import sys
-
+from collections import defaultdict
 import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
 
-from Class.File import File
-from Class.Pile import Pile
+class Graphe:
+    "La classe représente un graphe à l'aide d'une liste d'adjacence."
+
+    def __init__(self):
+        self.liste_adjacence = defaultdict(dict)
+    
+    def ajouter_arete(self, sommet_depart, sommet_arrivee, capacite):
+        """
+        Ajout d'une arête avec une capacité donnée.
+        :param sommet_depart: Le sommet de départ de l'arête
+        :param sommet_arrivee: Le sommet d'arriver de l'arête
+        :param capacite: La capacité de l'arête
+        """
+
+        self.liste_adjacence[sommet_depart][sommet_arrivee] = capacite
+        self.liste_adjacence[sommet_arrivee][sommet_depart] = 0
+
+    def obtenir_voisins(self, sommet):
+        return self.liste_adjacence[sommet].keys()
+
+def recherche_largeur(graphe, source, puits, parent):
+    visite = {source}
+    file = [source]
+
+    while file:
+        sommet = file.pop(0)
+
+        for voisin in graphe.obtenir_voisins(sommet):
+            if voisin not in visite and graphe.liste_adjacence[sommet][voisin] > 0:
+                visite.add(voisin)
+                parent[voisin] = sommet
+                if voisin == puits:
+                    return True
+                file.append(voisin)
+    return False
+
+def edmonds_karp(graphe, source, puits):
+    # Dictionnaire pour stocker le chemin parent pour la reconstruction des chemins
+    parent = {}
+    # Initialisation du flot maximum à 0
+    flot_maximum = 0
+
+    # Tant qu'il existe un chemin augmentant du source au puits
+    while recherche_largeur(graphe, source, puits, parent):
+        # Initialise le flot minimum du chemin courant à l'infini
+        flot_chemin = float('Inf')
+        v = puits # On commence à partir du puits
+
+        # Remonter le chemin depuis le puits jusqu'à la source
+        while v != source:
+            # Si le sommet n'a âs de parent, on sort
+            if v not in parent:
+                return flot_maximum # Retourne le flot maximum atteint
+            
+            s = parent[v]  # Récupère le sommet parent de v
+            # Mis à jour de la capactié minimale du chemin actuel
+            flot_chemin = min(flot_chemin, graphe.liste_adjacence[s][v]) 
+            v = s # Remonter au sommet parent
+
+        # Mettre à jour les capacités du graphe
+        v = puits # Réinitialisation de v au puits
+        while v != source:
+            u = parent[v] # Récuperation du sommet parent v
+            # Réduction de l'arête u -> v
+            graphe.liste_adjacence[u][v] -= flot_chemin
+            # Augmentation de la capacaité de l'arête v -> u
+            graphe.liste_adjacence[v][u] += flot_chemin
+            v = parent[v] # Remonter au sommet parent
+
+        # Ajouter le flot du chemin courant au flot maximum
+        flot_maximum += flot_chemin
+
+    return flot_maximum # Retourner le flot maximum calculé
+
 
 """
 Le fichier csv des joueurs sera générer par la fonction ci-dessous.
@@ -84,12 +156,24 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
         """
         age:int = joueur['age']
         poids:float = joueur['poids']
+        categorie_assignee = None
+        plage_poids = None
 
         for _, row in categories.iterrows():
             if row['age_min'] <= age <= row['age_max']:
-                if row['poids_min'] <= poids <= row['poids_max']:
-                    return row['categorie'], f"{row['poids_min']}-{row['poids_max']}kg"
-                
+                if poids <= row['poids_max']:
+                    categorie_assignée = row['categorie']
+                    plage_poids = f"{row['poids_min']}-{row['poids_max']}kg"
+                    break  # Sortir de la boucle dès qu'on trouve la catégorie valide
+                else:
+                    # On garde la catégorie si le poids dépasse
+                    categorie_assignée = row['categorie']
+                    plage_poids = f"{row['poids_max']}kg+"
+
+    # Si une catégorie a été assignée, retourner la catégorie et la plage de poids
+        if categorie_assignée:
+            return (categorie_assignée, plage_poids)
+
         return None, None
 
 
@@ -123,31 +207,58 @@ def organiser_matchs_par_categories(joueurs):
     matchs_par_categorie = {}
 
     for (cat_age, cat_poids), joueurs in groupes:
-        temp_pile:Pile = Pile()
-        temp_file:File = File()
-        tab_match:list = []
-        bye_list = [] # Liste pour stocker les byes
+        graphe = Graphe()
+        source = 'source'
+        puits = 'puits'
 
         # Si le nombre de joueurs est impair, attribuer un "bye"
+        joueur_bye = None
         if len(joueurs) % 2 != 0:
             joueur_bye_index = random.choice(joueurs.index)
             joueur_bye = joueurs.loc[joueur_bye_index]
-            bye_list.append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
             joueurs = joueurs.drop(joueur_bye_index)
 
-        # Remplissage de la file avec les données joueurs à partir du début de la DF
-        for i in range(0, len(joueurs)//2):
-            temp_file.emfiler([joueurs["nom"].iloc[i],joueurs["prenom"].iloc[i],joueurs["club"].iloc[i]])
+        for _, joueur in joueurs.iterrows():
+            joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
+            graphe.ajouter_arete(source, joueur_id, 1)
 
-        # Remplissage de la pile avec les données joueurs à partir de la moitié de la DF
-        for i in range(len(joueurs)//2,len(joueurs)):
-            temp_pile.empiler([joueurs["nom"].iloc[i],joueurs["prenom"].iloc[i],joueurs["club"].iloc[i]])
-        # print("Affichage file (length : %s) : %s \n Affichage pile (length : %s) : %s" % (len(temp_file.afficher()),temp_file.afficher(),len(temp_pile.afficher()),temp_pile.afficher()))    
+        # Ajouter les arêtes entre les joueurs (éviter les rencontres intra-clubs)
+        for i in range(len(joueurs)):
+            for j in range(i + 1, len(joueurs)):
+                if joueurs['club'].iloc[i] != joueurs['club'].iloc[j]:
+                    joueur1 = f"{joueurs['prenom'].iloc[i]} {joueurs['nom'].iloc[i]} ({joueurs['club'].iloc[i]})"
+                    joueur2 = f"{joueurs['prenom'].iloc[j]} {joueurs['nom'].iloc[j]} ({joueurs['club'].iloc[j]})"
+                    graphe.ajouter_arete(joueur1, joueur2, 1)
 
-        # Association du premier joueur avec le dernier joueur et ainsi de suite
-        while len(temp_file.afficher()) != 0 and len(temp_pile.afficher()) != 0:
-            tab_match.append([temp_file.defiler(),temp_pile.depiler()])
-            # Sauvegarde des matchs pour cette catégorie
+        # Ajouter les arêtes entre les joueurs et le puits
+        for _, joueur in joueurs.iterrows():
+            joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
+            graphe.ajouter_arete(joueur_id, puits, 1)
+
+        # Calculer le flot maximum
+        edmonds_karp(graphe, source, puits)
+
+        tab_match = []
+        bye_list = []
+
+        # Enregistrer le joueur qui a reçu un bye
+        if joueur_bye is not None:
+            bye_list.append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
+
+        # Trouver les matchs
+        joueurs_utilises = set()
+        for index, joueur in joueurs.iterrows():
+            joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
+            if joueur_id in joueurs_utilises:
+                continue  # Ignorer les joueurs déjà appariés
+            for v in graphe.obtenir_voisins(joueur_id):
+                if graphe.liste_adjacence[joueur_id][v] == 0 and v != puits and v not in joueurs_utilises:
+                    tab_match.append([joueur_id, v])
+                    joueurs_utilises.add(joueur_id)
+                    joueurs_utilises.add(v)
+                    break  # Un match par joueur
+
+
         matchs_par_categorie[(cat_age, cat_poids)] = {
             "matches": tab_match,
             "byes": bye_list
@@ -155,19 +266,20 @@ def organiser_matchs_par_categories(joueurs):
     return matchs_par_categorie
             
 def afficher_matchs(matchs_par_categorie):
-    for(cat_age, cat_poids), data in matchs_par_categorie.items():
+    for (cat_age, cat_poids), data in matchs_par_categorie.items():
         print(f"\n{'=' * 40}")
         print(f"Matchs pour la catégorie {cat_age} {cat_poids} : ")
         print(f"{'=' * 40}")
 
         for match in data['matches']:
-            j1 = f"{match[0][0]} {match[0][1]} ({match[0][2]})"
-            j2 = f"{match[1][0]} {match[1][1]} ({match[1][2]})"
+            j1 = match[0]
+            j2 = match[1]
             print(f"{j1:<30} VS {j2:<30}")
-        
+
         if data['byes']:
             print("Byes : "+", ".join(data['byes']))
         print(f"{'=' * 40}")
+
 
 
 def main():
