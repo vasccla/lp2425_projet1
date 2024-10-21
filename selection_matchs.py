@@ -4,6 +4,10 @@ import json
 from matchs_tri_simple import organiser_matchs_par_tri_simple, afficher_matchs_tri_simple
 from matchs_edmond import organiser_matchs_par_edmond, afficher_matchs_edmonds
 
+import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
+
+
+
 """
 Le fichier csv des joueurs sera générer par la fonction ci-dessous.
 Si le fichier n'existe pas, il sera créer.
@@ -142,8 +146,9 @@ def enregistrer_matchs_json(matchs_par_categorie, nom_fichier):
 def main():
     try:
         if len(sys.argv) < 3:
-            print("Erreur: Veuillez fournir deux fichiers CSV comme arguments.")
-            print("Usage: Python exemple_tri.py <fichier_ods> <fichier_categories>")
+            print("ERREUR: Fichiers requis manquants.")
+            print("Veuillez fournir un fichier .ods et le nom de la feuille de calcul.")
+            print("USAGE: python exemple_tri.py <fichier_ods> <feuille de calcul>")
             sys.exit(1)
 
         fichier_ods = sys.argv[1]
