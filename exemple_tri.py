@@ -1,5 +1,6 @@
 import random
 import sys
+
 import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
 
 from Class.Graphe import Graphe #Importation de la classe Graphe qui est implémenter dans Class/Graphe.py
@@ -277,26 +278,31 @@ def organiser_matchs_par_edmond(joueurs):
 
 
 
-def afficher_matchs_tri_simple(matchs, byes_par_categorie):
+def afficher_matchs_tri_simple(matchs, byes_par_categorie)->None:
     for cat_age, cat_poids, tabMatch in matchs:
-            print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
-            for j in tabMatch:
-                print(f"{j[0][0]} {j[0][1]} ({j[0][2]}) vs {j[1][0]} {j[1][1]} ({j[1][2]})")
-            
-            if (cat_age, cat_poids) in byes_par_categorie:
-                print("Byes : " + ", ".join(byes_par_categorie[(cat_age, cat_poids)]))
+        print(f"{'=' * 40}")
+        print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
+        print(f"{'=' * 40}")
+        for j in tabMatch:
+            j1:str = j[0][0] + " " + j[0][1] +" ("+j[0][2]+")"
+            j2:str = j[1][0] + " " + j[1][1] +" ("+j[1][2]+")"
+            print(f"{j1:<30} VS {j2:<30}")
+        
+        if (cat_age, cat_poids) in byes_par_categorie:
+            print("Byes : " + ", ".join(byes_par_categorie[(cat_age, cat_poids)]))
+        print(f"{'=' * 40}")
 
 
 
-def afficher_matchs_edmonds(matchs_par_categorie):
+def afficher_matchs_edmonds(matchs_par_categorie)->None:
     for (cat_age, cat_poids), data in matchs_par_categorie.items():
         print(f"\n{'=' * 40}")
         print(f"Matchs pour la catégorie {cat_age} {cat_poids} : ")
         print(f"{'=' * 40}")
 
         for match in data['matches']:
-            j1 = match[0]
-            j2 = match[1]
+            j1:str = match[0]
+            j2:str = match[1]
             print(f"{j1:<30} VS {j2:<30}")
 
         if data['byes']:
@@ -308,8 +314,9 @@ def afficher_matchs_edmonds(matchs_par_categorie):
 def main():
     try:
         if len(sys.argv) < 3:
-            print("Erreur: Veuillez fournir deux fichiers CSV comme arguments.")
-            print("Usage: Python exemple_tri.py <fichier_ods> <fichier_categories>")
+            print("ERREUR: Fichiers requis manquants.")
+            print("Veuillez fournir un fichier .ods et le nom de la feuille de calcul.")
+            print("USAGE: python exemple_tri.py <fichier_ods> <feuille de calcul>")
             sys.exit(1)
 
         fichier_ods = sys.argv[1]
