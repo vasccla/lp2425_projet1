@@ -1,66 +1,8 @@
-import random
 import sys
-import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
-
-from Class.Graphe import Graphe #Importation de la classe Graphe qui est implémenter dans Class/Graphe.py
-from Class.Pile import Pile
-from Class.File import File
-
-
-def recherche_largeur(graphe:Graphe, source, puits, parent):
-    visite = {source}
-    file = [source]
-
-    while file:
-        sommet = file.pop(0)
-
-        for voisin in graphe.obtenir_voisins(sommet):
-            if voisin not in visite and graphe.liste_adjacence[sommet][voisin] > 0:
-                visite.add(voisin)
-                parent[voisin] = sommet
-                if voisin == puits:
-                    return True
-                file.append(voisin)
-    return False
-
-def edmonds_karp(graphe:Graphe, source, puits):
-    # Dictionnaire pour stocker le chemin parent pour la reconstruction des chemins
-    parent = {}
-    # Initialisation du flot maximum à 0
-    flot_maximum = 0
-
-    # Tant qu'il existe un chemin augmentant du source au puits
-    while recherche_largeur(graphe, source, puits, parent):
-        # Initialise le flot minimum du chemin courant à l'infini
-        flot_chemin = float('Inf')
-        v = puits # On commence à partir du puits
-
-        # Remonter le chemin depuis le puits jusqu'à la source
-        while v != source:
-            # Si le sommet n'a âs de parent, on sort
-            if v not in parent:
-                return flot_maximum # Retourne le flot maximum atteint
-            
-            s = parent[v]  # Récupère le sommet parent de v
-            # Mis à jour de la capactié minimale du chemin actuel
-            flot_chemin = min(flot_chemin, graphe.liste_adjacence[s][v]) 
-            v = s # Remonter au sommet parent
-
-        # Mettre à jour les capacités du graphe
-        v = puits # Réinitialisation de v au puits
-        while v != source:
-            u = parent[v] # Récuperation du sommet parent v
-            # Réduction de l'arête u -> v
-            graphe.liste_adjacence[u][v] -= flot_chemin
-            # Augmentation de la capacaité de l'arête v -> u
-            graphe.liste_adjacence[v][u] += flot_chemin
-            v = parent[v] # Remonter au sommet parent
-
-        # Ajouter le flot du chemin courant au flot maximum
-        flot_maximum += flot_chemin
-
-    return flot_maximum # Retourner le flot maximum calculé
-
+import pandas as pd
+import json
+from matchs_tri_simple import organiser_matchs_par_tri_simple, afficher_matchs_tri_simple
+from matchs_edmond import organiser_matchs_par_edmond, afficher_matchs_edmonds
 
 """
 Le fichier csv des joueurs sera générer par la fonction ci-dessous.
@@ -74,7 +16,7 @@ def lire_joueur_ods(fichier_ods: str, nom_feuille: str):
 
     # Sélectionner les colonnes souhaitées
     colonnes_souhaitees = ['NOM', 'PRÉNOM', 'POIDS', 'AGE', 'CLUB'] # Remplacez par les noms réels de vos colonnes
-    df_selection = df[colonnes_souhaitees].copy()
+    df_selection = df[colonnes_souhaitees].copy() 
 
     # Modifier les noms des colonnes
     noms_nouveaux = {'NOM': 'nom', 'PRÉNOM': 'prenom', 'POIDS': 'poids', 'AGE': 'age', 'CLUB': 'club'} # Remplacez par vos nouveaux noms
@@ -177,132 +119,24 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     return joueurs
 
 
-def organiser_matchs_par_tri_simple(joueurs):
-    # Groupement des joueurs par catégories d'âge et de poids
-    groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
-    tous_les_matchs = []  # Liste pour stocker tous les matchs
-    byes_par_categorie = {}
-
-    for (cat_age, cat_poids), joueurs in groupes:
-        temp_pile = Pile()
-        temp_file = File()
-        tabMatch = []
-
-        if len(joueurs) % 2 != 0:
-            joueur_bye_index = random.choice(joueurs.index)
-            joueur_bye = joueurs.loc[joueur_bye_index]
-            byes_par_categorie.setdefault((cat_age, cat_poids), []).append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
-            joueurs = joueurs.drop(joueur_bye_index)
-
-        # Remplissage de la file avec les données joueurs à partir du début de la DF
-        for i in range(0, len(joueurs) // 2):
-            temp_file.emfiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])
-        # Remplissage de la pile avec les données joueurs à partir de la moitié de la DF
-        for i in range(len(joueurs) // 2, len(joueurs)):
-            temp_pile.empiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])
-
-        while len(temp_file.afficher()) != 0 and len(temp_pile.afficher()) != 0:
-            tabMatch.append([temp_file.defiler(), temp_pile.depiler()])
-
-        # Ajouter les matchs de cette catégorie à la liste globale
-        tous_les_matchs.append((cat_age, cat_poids, tabMatch))
-
-    return tous_les_matchs, byes_par_categorie
-
+def enregistrer_matchs_json(matchs_par_categorie, nom_fichier):
+    """
+    Enregistre les matchs dans un fichier JSON.
     
+    :param matchs_par_categorie: Dictionnaire contenant les matchs par catégorie
+    :param nom_fichier: Nom du fichier dans lequel enregistrer les données
+    """
+    # Transformer les clés de tuple en chaînes de caractères
+    matchs_modifies = {
+        str(cat): data for cat, data in matchs_par_categorie.items()
+    }
 
-def organiser_matchs_par_edmond(joueurs):
-    # Groupement des joueurs par catégories d'âge et de poids
-    groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
-    matchs_par_categorie = {}
-
-    for (cat_age, cat_poids), joueurs in groupes:
-        graphe = Graphe()
-        source = 'source'
-        puits = 'puits'
-
-        # Si le nombre de joueurs est impair, attribuer un "bye"
-        joueur_bye = None
-        if len(joueurs) % 2 != 0:
-            joueur_bye_index = random.choice(joueurs.index)
-            joueur_bye = joueurs.loc[joueur_bye_index]
-            joueurs = joueurs.drop(joueur_bye_index)
-
-        for _, joueur in joueurs.iterrows():
-            joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
-            graphe.ajouter_arete(source, joueur_id, 1)
-
-        # Ajouter les arêtes entre les joueurs (éviter les rencontres intra-clubs)
-        for i in range(len(joueurs)):
-            for j in range(i + 1, len(joueurs)):
-                if joueurs['club'].iloc[i] != joueurs['club'].iloc[j]:
-                    joueur1 = f"{joueurs['prenom'].iloc[i]} {joueurs['nom'].iloc[i]} ({joueurs['club'].iloc[i]})"
-                    joueur2 = f"{joueurs['prenom'].iloc[j]} {joueurs['nom'].iloc[j]} ({joueurs['club'].iloc[j]})"
-                    graphe.ajouter_arete(joueur1, joueur2, 1)
-
-        # Ajouter les arêtes entre les joueurs et le puits
-        for _, joueur in joueurs.iterrows():
-            joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
-            graphe.ajouter_arete(joueur_id, puits, 1)
-
-        # Calculer le flot maximum
-        edmonds_karp(graphe, source, puits)
-
-        tab_match = []
-        bye_list = []
-
-        # Enregistrer le joueur qui a reçu un bye
-        if joueur_bye is not None:
-            bye_list.append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
-
-        # Trouver les matchs
-        joueurs_utilises = set()
-        for index, joueur in joueurs.iterrows():
-            joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
-            if joueur_id in joueurs_utilises:
-                continue  # Ignorer les joueurs déjà appariés
-            for v in graphe.obtenir_voisins(joueur_id):
-                if graphe.liste_adjacence[joueur_id][v] == 0 and v != puits and v not in joueurs_utilises:
-                    tab_match.append([joueur_id, v])
-                    joueurs_utilises.add(joueur_id)
-                    joueurs_utilises.add(v)
-                    break  # Un match par joueur
-
-
-        matchs_par_categorie[(cat_age, cat_poids)] = {
-            "matches": tab_match,
-            "byes": bye_list
-        }
-    return matchs_par_categorie
-
-
-
-def afficher_matchs_tri_simple(matchs, byes_par_categorie):
-    for cat_age, cat_poids, tabMatch in matchs:
-            print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
-            for j in tabMatch:
-                print(f"{j[0][0]} {j[0][1]} ({j[0][2]}) vs {j[1][0]} {j[1][1]} ({j[1][2]})")
-            
-            if (cat_age, cat_poids) in byes_par_categorie:
-                print("Byes : " + ", ".join(byes_par_categorie[(cat_age, cat_poids)]))
-
-
-
-def afficher_matchs_edmonds(matchs_par_categorie):
-    for (cat_age, cat_poids), data in matchs_par_categorie.items():
-        print(f"\n{'=' * 40}")
-        print(f"Matchs pour la catégorie {cat_age} {cat_poids} : ")
-        print(f"{'=' * 40}")
-
-        for match in data['matches']:
-            j1 = match[0]
-            j2 = match[1]
-            print(f"{j1:<30} VS {j2:<30}")
-
-        if data['byes']:
-            print("Byes : "+", ".join(data['byes']))
-        print(f"{'=' * 40}")
-
+    try:
+        with open(nom_fichier, 'w', encoding='utf-8') as f:
+            json.dump(matchs_modifies, f, ensure_ascii=False, indent=4)
+        print(f"Les matchs ont été enregistrés dans le fichier {nom_fichier}.")
+    except Exception as e:
+        print(f"Erreur lors de l'enregistrement dans le fichier JSON : {e}")
 
 
 def main():
@@ -320,7 +154,7 @@ def main():
 
         if joueurs is not None:
             while True:
-                print("Menu : ")
+                print("\nMenu : ")
                 print("1. Géneration de matchs par tri simple")
                 print("2. Géneration de matchs par l'algorithme d'Edmond")
                 print("3. Quitter")
@@ -334,6 +168,7 @@ def main():
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
                     afficher_matchs_edmonds(match)
+                    enregistrer_matchs_json(match, 'matchs.json')
 
                 elif choix == '3':
                     print("Au revoir !")

@@ -101,7 +101,7 @@ def organiser_matchs_par_edmond(joueurs):
 
         # Trouver les matchs
         joueurs_utilises = set()
-        for index, joueur in joueurs.iterrows():
+        for _, joueur in joueurs.iterrows():
             joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
             if joueur_id in joueurs_utilises:
                 continue  # Ignorer les joueurs déjà appariés
@@ -120,6 +120,10 @@ def organiser_matchs_par_edmond(joueurs):
     return matchs_par_categorie
 
 def afficher_matchs_edmonds(matchs_par_categorie):
+    print("\n")
+    print("#######################################################")
+    print("################# MATCHS PAR EDMOND ###############")
+    print("#######################################################")
     for (cat_age, cat_poids), data in matchs_par_categorie.items():
         print(f"\n{'=' * 40}")
         print(f"Matchs pour la catégorie {cat_age} {cat_poids} : ")

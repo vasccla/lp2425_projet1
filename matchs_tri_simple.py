@@ -36,10 +36,20 @@ def organiser_matchs_par_tri_simple(joueurs):
 
 
 def afficher_matchs_tri_simple(matchs, byes_par_categorie):
+    print("\n")
+    print("#######################################################")
+    print("################# MATCHS PAR TRI SIMPLE ###############")
+    print("#######################################################")
     for cat_age, cat_poids, tabMatch in matchs:
-            print(f"\nMatch pour la catégorie {cat_age} {cat_poids} : ")
+            print(f"\n{'=' * 40}")
+            print(f"Match pour la catégorie {cat_age} {cat_poids} : ")
+            print(f"{'=' * 40}")
             for j in tabMatch:
-                print(f"{j[0][0]} {j[0][1]} ({j[0][2]}) vs {j[1][0]} {j[1][1]} ({j[1][2]})")
+                j1 = f"{j[0][0]} {j[0][1]} ({j[0][2]})"
+                j2 = f"{j[1][0]} {j[1][1]} ({j[1][2]})"
+
+                print(f"{j1:<30} vs {j2:<30}")
             
             if (cat_age, cat_poids) in byes_par_categorie:
                 print("Byes : " + ", ".join(byes_par_categorie[(cat_age, cat_poids)]))
+            print(f"{'=' * 40}")
