@@ -1,4 +1,5 @@
 import random
+
 from Class.Pile import Pile
 from Class.File import File
 
@@ -9,8 +10,8 @@ def organiser_matchs_par_tri_simple(joueurs):
     byes_par_categorie = {}
 
     for (cat_age, cat_poids), joueurs in groupes:
-        temp_pile = Pile()
-        temp_file = File()
+        temp_pile:Pile = Pile()
+        temp_file:File = File()
         tabMatch = []
 
         if len(joueurs) % 2 != 0:
@@ -21,7 +22,7 @@ def organiser_matchs_par_tri_simple(joueurs):
 
         # Remplissage de la file avec les données joueurs à partir du début de la DF
         for i in range(0, len(joueurs) // 2):
-            temp_file.emfiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])
+            temp_file.enfiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])
         # Remplissage de la pile avec les données joueurs à partir de la moitié de la DF
         for i in range(len(joueurs) // 2, len(joueurs)):
             temp_pile.empiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])
@@ -41,15 +42,15 @@ def afficher_matchs_tri_simple(matchs, byes_par_categorie):
     print("################# MATCHS PAR TRI SIMPLE ###############")
     print("#######################################################")
     for cat_age, cat_poids, tabMatch in matchs:
-            print(f"\n{'=' * 40}")
-            print(f"Match pour la catégorie {cat_age} {cat_poids} : ")
-            print(f"{'=' * 40}")
-            for j in tabMatch:
-                j1 = f"{j[0][0]} {j[0][1]} ({j[0][2]})"
-                j2 = f"{j[1][0]} {j[1][1]} ({j[1][2]})"
+        print(f"\n{'=' * 40}")
+        print(f"Match pour la catégorie {cat_age} {cat_poids} : ")
+        print(f"{'=' * 40}")
+        for j in tabMatch:
+            j1 = f"{j[0][0]} {j[0][1]} ({j[0][2]})"
+            j2 = f"{j[1][0]} {j[1][1]} ({j[1][2]})"
 
-                print(f"{j1:<30} vs {j2:<30}")
-            
-            if (cat_age, cat_poids) in byes_par_categorie:
-                print("Byes : " + ", ".join(byes_par_categorie[(cat_age, cat_poids)]))
-            print(f"{'=' * 40}")
+            print(f"{j1:<30} vs {j2:<30}")
+
+        if (cat_age, cat_poids) in byes_par_categorie:
+            print("Byes : " + ", ".join(byes_par_categorie[(cat_age, cat_poids)]))
+        print(f"{'=' * 40}")

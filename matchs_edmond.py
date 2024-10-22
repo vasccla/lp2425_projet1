@@ -1,5 +1,7 @@
-from Class.Graphe import Graphe #Importation de la classe Graphe qui est implémenter dans Class/Graphe.py
 import random
+
+from Class.Graphe import Graphe #Importation de la classe Graphe, implémenter dans Class/Graphe.py
+
 
 def recherche_largeur(graphe:Graphe, source, puits, parent):
     visite = {source}

@@ -3,7 +3,7 @@ class File():
     def __init__(self): # Initialisation de la file
         self.valeurs = []
 
-    def emfiler(self,valeur): # Fonction qui permet d'emfiler la valeur dans la file
+    def enfiler(self,valeur): # Fonction qui permet d'emfiler la valeur dans la file
         self.valeurs.append(valeur) # Ajout de la valeur à la file
 
     def defiler(self): # Fonction qui permet de défiler la dernière valeur de la file

@@ -1,21 +1,28 @@
 import sys
-import pandas as pd
 import json
+
+import pandas as pd # Utilisation de pandas pour une manipulation plus simple et flexible des données
+
 from matchs_tri_simple import organiser_matchs_par_tri_simple, afficher_matchs_tri_simple
 from matchs_edmond import organiser_matchs_par_edmond, afficher_matchs_edmonds
-
-import pandas as pd # Utilisation de pandas pour une manipulation plus simple et plus flexible des données
-
 
 
 """
 Le fichier csv des joueurs sera générer par la fonction ci-dessous.
 Si le fichier n'existe pas, il sera créer.
-Si des joueurs sont rajouter dans le fichier ods dans l'avenir, les données du fichier csv seront écrasés et le fichier sera remis à jour.
+Si des joueurs sont rajouter dans le fichier ods dans l'avenir,
+les données du fichier csv seront écrasés et le fichier sera remis à jour.
 """
 
-def lire_joueur_ods(fichier_ods: str, nom_feuille: str):
-    # Lire la feuille spécifiée en tant que DataFrameg
+def lire_joueur_ods(fichier_ods: str, nom_feuille: str) -> str:
+    """
+    Lit les données des joueurs à partir d'un fichier ODS et les enregistre dans un fichier CSV.
+
+    :param fichier_ods: Chemin du fichier ODS contenant les données des joueurs
+    :param nom_feuille: Nom de la feuille dans le fichier ODS à lire
+    :return: Chemin du fichier CSV généré contenant les informations des joueurs
+    """
+    # Lire la feuille spécifiée en tant que DataFrame
     df = pd.read_excel(fichier_ods, sheet_name=nom_feuille)
 
     # Sélectionner les colonnes souhaitées
@@ -23,7 +30,7 @@ def lire_joueur_ods(fichier_ods: str, nom_feuille: str):
     df_selection = df[colonnes_souhaitees].copy() 
 
     # Modifier les noms des colonnes
-    noms_nouveaux = {'NOM': 'nom', 'PRÉNOM': 'prenom', 'POIDS': 'poids', 'AGE': 'age', 'CLUB': 'club'} # Remplacez par vos nouveaux noms
+    noms_nouveaux = {'NOM': 'nom', 'PRÉNOM': 'prenom', 'POIDS': 'poids', 'AGE': 'age', 'CLUB': 'club'}
     df_selection.rename(columns=noms_nouveaux, inplace=True)
 
     # Enregistrer le DataFrame filtré avec les nouveaux noms en CSV
@@ -32,11 +39,10 @@ def lire_joueur_ods(fichier_ods: str, nom_feuille: str):
     return csv_file_path
 
 def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
-
     try:
             # Lecture du fichier csv avec les joueurs
         joueurs = pd.read_csv(fichier_joueurs) # On met le résultat dans la variable 'joueurs' de type DataFrame
-    
+
     except FileNotFoundError:
         print(f"Erreur : Le fichier {fichier_joueurs} n'a pas été trouvé.")
         return None
@@ -46,11 +52,11 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     except Exception as e:
         print(f"Erreur lors de la lecture du fichier joueurs : {e}")
         return None
-    
+
     try:
             # Lecture du fichier csv avec les catégories
         categories = pd.read_csv(fichier_categories) # On met le résultat dans la variable 'categories' de type DataFrame
-    
+
     except FileNotFoundError:
         print(f"Erreur : Le fichier {fichier_categories} n'a pas été trouvé.")
         return None
@@ -60,7 +66,7 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     except Exception as e:
         print(f"Erreur lors de la lecture du fichier joueurs : {e}")
         return None
-    
+
 
     """ On commence par extraire l'âge et le poids du joueur.
      Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids, on vérifie si l'âge
@@ -72,17 +78,11 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
 
     def assigner_categorie(joueur):
         """
-            ATTRIBUTION CATEGORIE D'AGE ET DE POIDS POUR CHAQUES JOUEURS
+        Assigne une catégorie d'âge et de poids à un joueur en fonction de ses caractéristiques.
 
-            On commence par extraire l'âge et le poids du joueur.
-            Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids,
-            on vérifie si l'âge du joueur se situe dans les limites de la catégorie.
-            Si c'est le cas, on parcourt les plages de poids associées à cette
-            catégories pour déterminer si 
-            le poids du joueur est compris dans l'une d'elles.
-            Si les 2 conditions sont réunis, on retourne la catégorie d'âge et
-            la plage de poids sous la forme '20-25kg'
-            Si il n'y a aucune correspondance, on retourne None, None
+        :param joueur: Ligne du DataFrame contenant les informations du joueur
+        :return: Tuple contenant la catégorie d'âge et la plage de poids, ou (None, None)
+        si aucune correspondance
         """
         age:int = joueur['age']
         poids:float = joueur['poids']
@@ -107,9 +107,12 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
         return None, None
 
 
-    """ On applique la fonction assigner_categorie à chaque ligne du DataFrame "joueurs", issue de la lecture du fichier csv
-     On le réalise ligne par ligne "axis=1" et non par colonne "axis=0"
-     Si la fonction renvoie une liste ou un tuple pour chaque ligne,  'expand' va étendre la sortie sur plusieurs colonnes """
+    """
+    On applique la fonction assigner_categorie à chaque ligne du DataFrame "joueurs",
+    issue de la lecture du fichier csv. On le réalise ligne
+    par ligne "axis=1" et non par colonne "axis=0". Si la fonction renvoie
+    une liste ou un tuple pour chaque ligne,  'expand' va étendre la sortie sur plusieurs colonnes
+    """
 
     try:
         joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
@@ -123,7 +126,7 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     return joueurs
 
 
-def enregistrer_matchs_json(matchs_par_categorie, nom_fichier):
+def enregistrer_matchs_json(matchs_par_categorie, nom_fichier:str) -> None:
     """
     Enregistre les matchs dans un fichier JSON.
     
@@ -154,7 +157,7 @@ def main():
         fichier_ods = sys.argv[1]
         nom_feuille = sys.argv[2]
         fichier_joueur = lire_joueur_ods(fichier_ods, nom_feuille) 
-        
+
         joueurs = lecture_joueurs_et_categories(fichier_joueur, 'categorie.csv')
 
         if joueurs is not None:
@@ -178,7 +181,7 @@ def main():
                 elif choix == '3':
                     print("Au revoir !")
                     break
-                
+
                 else:
                     print("Choix invalide, veuillez réessayer.")
 
