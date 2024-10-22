@@ -147,6 +147,12 @@ def enregistrer_matchs_json(matchs_par_categorie, nom_fichier:str) -> None:
 
 
 def main():
+    """
+    Fonction principale du programme, gère l'entrée des fichiers, 
+    le menu interactif pour organiser les matchs et les cas d'erreurs.
+
+    :return: None
+    """
     try:
         if len(sys.argv) < 3:
             print("ERREUR: Fichiers requis manquants.")
@@ -165,18 +171,31 @@ def main():
                 print("\nMenu : ")
                 print("1. Géneration de matchs par tri simple")
                 print("2. Géneration de matchs par l'algorithme d'Edmond")
+                #print("2. Enregistrer la sélection de match au format .json")
                 print("3. Quitter")
 
-                choix = input("Veuillez entrer votre choix (1-3) : ")
+                choix:str = input("Veuillez entrer votre choix (1-3) : ")
 
                 if choix == '1':
                     match, byes = organiser_matchs_par_tri_simple(joueurs)
                     afficher_matchs_tri_simple(match, byes)
+                    
 
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
                     afficher_matchs_edmonds(match)
-                    enregistrer_matchs_json(match, 'matchs.json')
+
+                    print("\nEnregistrer la sélection de match au format .json")
+                    print("1. Oui")
+                    print("2. Non")
+
+                    choix_json:str = input("Veuillez entrer votre choix (1-2) : ")
+
+                    if choix_json == '1':
+                        enregistrer_matchs_json(match, 'matchs.json')
+                    elif choix_json != '2':
+                        print("Choix invalide, veuillez réessayer.")
+
 
                 elif choix == '3':
                     print("Au revoir !")
