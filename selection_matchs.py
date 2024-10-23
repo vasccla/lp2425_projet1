@@ -1,10 +1,9 @@
 import sys
-import json
 
 import pandas as pd # Utilisation de pandas pour une manipulation plus simple et flexible des données
 
-from matchs_tri_simple import organiser_matchs_par_tri_simple, afficher_matchs_tri_simple
-from matchs_edmond import organiser_matchs_par_edmond, afficher_matchs_edmonds
+from matchs_tri_simple import organiser_matchs_par_tri_simple, afficher_matchs_tri_simple, enregistrer_matchs_json1
+from matchs_edmond import organiser_matchs_par_edmond, afficher_matchs_edmonds, enregistrer_matchs_json2
 
 
 """
@@ -126,26 +125,6 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     return joueurs
 
 
-def enregistrer_matchs_json(matchs_par_categorie, nom_fichier:str) -> None:
-    """
-    Enregistre les matchs dans un fichier JSON.
-    
-    :param matchs_par_categorie: Dictionnaire contenant les matchs par catégorie
-    :param nom_fichier: Nom du fichier dans lequel enregistrer les données
-    """
-    # Transformer les clés de tuple en chaînes de caractères
-    matchs_modifies = {
-        str(cat): data for cat, data in matchs_par_categorie.items()
-    }
-
-    try:
-        with open(nom_fichier, 'w', encoding='utf-8') as f:
-            json.dump(matchs_modifies, f, ensure_ascii=False, indent=4)
-        print(f"Les matchs ont été enregistrés dans le fichier {nom_fichier}.")
-    except Exception as e:
-        print(f"Erreur lors de l'enregistrement dans le fichier JSON : {e}")
-
-
 def main():
     """
     Fonction principale du programme, gère l'entrée des fichiers, 
@@ -179,21 +158,24 @@ def main():
                 if choix == '1':
                     match, byes = organiser_matchs_par_tri_simple(joueurs)
                     afficher_matchs_tri_simple(match, byes)
+
+                    choix_json:str = input("\nEnregistrer la sélection de match au format .json (O/N) : ").lower()
+
+                    if choix_json == 'o':
+                        enregistrer_matchs_json1(match, byes, "matchs.json")
+                    elif choix_json != 'n':
+                        print("Choix invalide, veuillez réessayer.")
                     
 
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
                     afficher_matchs_edmonds(match)
 
-                    print("\nEnregistrer la sélection de match au format .json")
-                    print("1. Oui")
-                    print("2. Non")
+                    choix_json:str = input("\nEnregistrer la sélection de match au format .json (O/N) : ").lower()
 
-                    choix_json:str = input("Veuillez entrer votre choix (1-2) : ")
-
-                    if choix_json == '1':
-                        enregistrer_matchs_json(match, 'matchs.json')
-                    elif choix_json != '2':
+                    if choix_json == 'o':
+                        enregistrer_matchs_json2(match, 'matchs.json')
+                    elif choix_json != 'n':
                         print("Choix invalide, veuillez réessayer.")
 
 
