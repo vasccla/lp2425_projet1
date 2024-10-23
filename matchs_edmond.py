@@ -1,9 +1,8 @@
 import random
-
+import json
 from Class.Graphe import Graphe #Importation de la classe Graphe, implémenter dans Class/Graphe.py
 
-
-def recherche_largeur(graphe:Graphe, source, puits, parent):
+def recherche_largeur(graphe:Graphe, source, puits, parent) -> bool:
     visite = {source}
     file = [source]
 
@@ -120,6 +119,27 @@ def organiser_matchs_par_edmond(joueurs):
             "byes": bye_list
         }
     return matchs_par_categorie
+
+
+def enregistrer_matchs_json2(matchs_par_categorie, nom_fichier:str) -> None:
+    """
+    Enregistre les matchs dans un fichier JSON.
+    
+    :param matchs_par_categorie: Dictionnaire contenant les matchs par catégorie
+    :param nom_fichier: Nom du fichier dans lequel enregistrer les données
+    """
+    # Transformer les clés de tuple en chaînes de caractères
+    matchs_modifies = {
+        str(cat): data for cat, data in matchs_par_categorie.items()
+    }
+
+    try:
+        with open(nom_fichier, 'w', encoding='utf-8') as f:
+            json.dump(matchs_modifies, f, ensure_ascii=False, indent=4)
+        print(f"Les matchs ont été enregistrés dans le fichier {nom_fichier}.")
+    except Exception as e:
+        print(f"Erreur lors de l'enregistrement dans le fichier JSON : {e}")
+
 
 def afficher_matchs_edmonds(matchs_par_categorie):
     print("\n")
