@@ -1,4 +1,5 @@
 import random
+import json
 
 from Class.Pile import Pile
 from Class.File import File
@@ -34,6 +35,45 @@ def organiser_matchs_par_tri_simple(joueurs):
         tous_les_matchs.append((cat_age, cat_poids, tabMatch))
 
     return tous_les_matchs, byes_par_categorie
+
+
+
+def enregistrer_matchs_json1(matchs, byes_par_categorie, chemin_fichier):
+    """
+    Enregistre les matchs et les byes au format JSON.
+
+    :param matchs: Liste des matchs à enregistrer
+    :param byes_par_categorie: Dictionnaire des byes par catégorie
+    :param chemin_fichier: Chemin où enregistrer le fichier JSON
+    """
+    # Structurer les données pour JSON
+    data = {}
+
+    for cat_age, cat_poids, tabMatch in matchs:
+        categorie_key = f"('{cat_age}', '{cat_poids}')"  # Convertir le tuple en chaîne
+        match_data = {
+            "matches": []
+        }
+        for j in tabMatch:
+            match_data["matches"].append([
+                f"{j[0][0]} {j[0][1]} ({j[0][2]})",
+                f"{j[1][0]} {j[1][1]} ({j[1][2]})"
+            ])
+        
+        # Ajouter les byes pour cette catégorie si disponibles
+        if (cat_age, cat_poids) in byes_par_categorie:
+            match_data["byes"] = byes_par_categorie[(cat_age, cat_poids)]
+        else:
+            match_data["byes"] = []
+
+        data[categorie_key] = match_data
+
+    # Enregistrer les données dans un fichier JSON
+    with open(chemin_fichier, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+    print(f"Matchs et byes enregistrés dans le fichier : {chemin_fichier}")
+
 
 
 def afficher_matchs_tri_simple(matchs, byes_par_categorie):
