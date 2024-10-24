@@ -40,7 +40,7 @@ def organiser_matchs_par_tri_simple(joueurs):
 
 
 
-def enregistrer_matchs_json1(matchs, byes_par_categorie, chemin_fichier):
+def json1(matchs, byes_par_categorie, chemin_fichier):
     """
     Enregistre les matchs et les byes au format JSON.
 
@@ -78,7 +78,7 @@ def enregistrer_matchs_json1(matchs, byes_par_categorie, chemin_fichier):
 
 
 
-def afficher_matchs_tri_simple(matchs, byes_par_categorie):
+def matchs_tri_simple(matchs, byes_par_categorie):
     print("\n")
     print("#######################################################")
     print("################# MATCHS PAR TRI SIMPLE ###############")

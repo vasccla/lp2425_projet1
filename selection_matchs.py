@@ -1,17 +1,14 @@
+"""
+Module pour organiser et afficher des matchs en fonction des données des joueurs.
+Ce module inclut des fonctions pour lire les données des joueurs à partir de fichiers CSV,
+assigner des catégories et générer des appariements en utilisant différents algorithmes.
+"""
+
 import sys
+import pandas as pd
+from matchs_tri_simple import organiser_matchs_par_tri_simple, matchs_tri_simple, json1
+from matchs_edmond import organiser_matchs_par_edmond,matchs_edmonds,json2
 
-import pandas as pd # Utilisation de pandas pour une manipulation plus simple et flexible des données
-
-from matchs_tri_simple import organiser_matchs_par_tri_simple, afficher_matchs_tri_simple, enregistrer_matchs_json1
-from matchs_edmond import organiser_matchs_par_edmond, afficher_matchs_edmonds, enregistrer_matchs_json2
-
-
-"""
-Le fichier csv des joueurs sera générer par la fonction ci-dessous.
-Si le fichier n'existe pas, il sera créer.
-Si des joueurs sont rajouter dans le fichier ods dans l'avenir,
-les données du fichier csv seront écrasés et le fichier sera remis à jour.
-"""
 
 def lire_joueur_ods(fichier_ods: str, nom_feuille: str) -> str:
     """
@@ -22,25 +19,26 @@ def lire_joueur_ods(fichier_ods: str, nom_feuille: str) -> str:
     :return: Chemin du fichier CSV généré contenant les informations des joueurs
     """
     # Lire la feuille spécifiée en tant que DataFrame
-    df = pd.read_excel(fichier_ods, sheet_name=nom_feuille)
+    joueur_df = pd.read_excel(fichier_ods, sheet_name=nom_feuille)
 
     # Sélectionner les colonnes souhaitées
-    colonnes_souhaitees = ['NOM', 'PRÉNOM', 'POIDS', 'AGE', 'CLUB'] # Remplacez par les noms réels de vos colonnes
-    df_selection = df[colonnes_souhaitees].copy() 
+    colonnes_souhaitees = ['NOM', 'PRÉNOM', 'POIDS', 'AGE', 'CLUB']
+    df_selection = joueur_df[colonnes_souhaitees].copy()
 
     # Modifier les noms des colonnes
-    noms_nouveaux = {'NOM': 'nom', 'PRÉNOM': 'prenom', 'POIDS': 'poids', 'AGE': 'age', 'CLUB': 'club'}
+    noms_nouveaux = {'NOM':'nom', 'PRÉNOM':'prenom', 'POIDS':'poids', 'AGE':'age', 'CLUB':'club'}
     df_selection.rename(columns=noms_nouveaux, inplace=True)
 
     # Enregistrer le DataFrame filtré avec les nouveaux noms en CSV
-    csv_file_path = f"joueur.csv"
+    csv_file_path = "joueur.csv"
     df_selection.to_csv(csv_file_path, index=False)
     return csv_file_path
 
 def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
+    """ Assignation des joueurs par catégories """
     try:
-            # Lecture du fichier csv avec les joueurs
-        joueurs = pd.read_csv(fichier_joueurs) # On met le résultat dans la variable 'joueurs' de type DataFrame
+        # On met le résultat dans la variable 'joueurs' de type DataFrame
+        joueurs = pd.read_csv(fichier_joueurs)
 
     except FileNotFoundError:
         print(f"Erreur : Le fichier {fichier_joueurs} n'a pas été trouvé.")
@@ -48,13 +46,13 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     except pd.errors.EmptyDataError:
         print(f"Erreur : Le fichier {fichier_joueurs} est vide ou corrompu.")
         return None
-    except Exception as e:
-        print(f"Erreur lors de la lecture du fichier joueurs : {e}")
+    except ValueError as error:
+        print(f"Erreur lors de la lecture du fichier joueurs : {error}")
         return None
 
     try:
-            # Lecture du fichier csv avec les catégories
-        categories = pd.read_csv(fichier_categories) # On met le résultat dans la variable 'categories' de type DataFrame
+        # On met le résultat dans la variable 'categories' de type DataFrame
+        categories = pd.read_csv(fichier_categories)
 
     except FileNotFoundError:
         print(f"Erreur : Le fichier {fichier_categories} n'a pas été trouvé.")
@@ -62,18 +60,10 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
     except pd.errors.EmptyDataError:
         print(f"Erreur : Le fichier {fichier_categories} est vide ou corrompu.")
         return None
-    except Exception as e:
-        print(f"Erreur lors de la lecture du fichier joueurs : {e}")
+    except Exception as error:
+        print(f"Erreur lors de la lecture du fichier joueurs : {error}")
         return None
 
-
-    """ On commence par extraire l'âge et le poids du joueur.
-     Pour chaque catégorie d'âge définie dans le dictionnaire categories_age_poids, on vérifie si l'âge
-     du joueur se situe dans les limites de la catégorie.
-     Si c'est le cas, on parcourt les plages de poids associées à cette catégories pour déterminer si 
-     le poids du joueur est compris dans l'une d'elles.
-     Si les 2 conditions sont réunis, on retourne la catégorie d'âge et la plage de poids sous la forme
-     "20-25kg". Si il n'y a aucune correspondance, on retourne None, None """
 
     def assigner_categorie(joueur):
         """
@@ -94,10 +84,10 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
                     categorie_assignee = row['categorie']
                     plage_poids = f"{row['poids_min']}-{row['poids_max']}kg"
                     break  # Sortir de la boucle dès qu'on trouve la catégorie valide
-                else:
-                    # On garde la catégorie si le poids dépasse
-                    categorie_assignee = row['categorie']
-                    plage_poids = f"{row['poids_max']}kg+"
+
+                # On garde la catégorie si le poids dépasse
+                categorie_assignee = row['categorie']
+                plage_poids = f"{row['poids_max']}kg+"
 
     # Si une catégorie a été assignée, retourner la catégorie et la plage de poids
         if categorie_assignee:
@@ -105,19 +95,8 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
 
         return None, None
 
-
-    """
-    On applique la fonction assigner_categorie à chaque ligne du DataFrame "joueurs",
-    issue de la lecture du fichier csv. On le réalise ligne
-    par ligne "axis=1" et non par colonne "axis=0". Si la fonction renvoie
-    une liste ou un tuple pour chaque ligne,  'expand' va étendre la sortie sur plusieurs colonnes
-    """
-
     try:
         joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
-
-        # Calcul du nombre de joueurs par club dans chaque catégorie
-        joueurs['nb_joueurs_club'] = joueurs.groupby(['categorie_age', 'categorie_poids', 'club'])['nom'].transform('count')
     except Exception as e:
         print(f"Erreur lors du traitement des joueurs : {e}")
         return None
@@ -141,7 +120,7 @@ def main():
 
         fichier_ods = sys.argv[1]
         nom_feuille = sys.argv[2]
-        fichier_joueur = lire_joueur_ods(fichier_ods, nom_feuille) 
+        fichier_joueur = lire_joueur_ods(fichier_ods, nom_feuille)
 
         joueurs = lecture_joueurs_et_categories(fichier_joueur, 'categorie.csv')
 
@@ -157,27 +136,22 @@ def main():
 
                 if choix == '1':
                     match, byes = organiser_matchs_par_tri_simple(joueurs)
-                    afficher_matchs_tri_simple(match, byes)
+                    matchs_tri_simple(match, byes)
 
-                    choix_json:str = input("\nEnregistrer la sélection de match au format .json (O/N) : ").lower()
+                    choix_json:str = input("\nVoulez-vous le format json (O/N) : ").lower()
 
                     if choix_json == 'o':
-                        enregistrer_matchs_json1(match, byes, "matchs.json")
-                    elif choix_json != 'n':
-                        print("Choix invalide, veuillez réessayer.")
-                    
+                        json1(match, byes, "matchs.json")
+
 
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
-                    afficher_matchs_edmonds(match)
+                    matchs_edmonds(match)
 
-                    choix_json:str = input("\nEnregistrer la sélection de match au format .json (O/N) : ").lower()
+                    choix_json:str = input("\nVoulez-vous le format json (O/N) : ").lower()
 
                     if choix_json == 'o':
-                        enregistrer_matchs_json2(match, 'matchs.json')
-                    elif choix_json != 'n':
-                        print("Choix invalide, veuillez réessayer.")
-
+                        json2(match, 'matchs.json')
 
                 elif choix == '3':
                     print("Au revoir !")
@@ -186,8 +160,12 @@ def main():
                 else:
                     print("Choix invalide, veuillez réessayer.")
 
-    except Exception as e:
-        print(f"Erreur dans l'execution du programme : {e}")
+    except FileNotFoundError:
+        print("Erreur : Le fichier n'a pas été trouvé.")
+    except ValueError as error:
+        print(f"Erreur de valeur : {error}")
+    except TypeError as error:
+        print(f"Erreur de type : {error}")
 
 if __name__ == "__main__":
     main()

@@ -123,7 +123,7 @@ def organiser_matchs_par_edmond(joueurs):
     return matchs_par_categorie
 
 
-def enregistrer_matchs_json2(matchs_par_categorie, nom_fichier:str) -> None:
+def json2(matchs_par_categorie, nom_fichier:str) -> None:
     """
     Enregistre les matchs dans un fichier JSON.
     
@@ -143,7 +143,7 @@ def enregistrer_matchs_json2(matchs_par_categorie, nom_fichier:str) -> None:
         print(f"Erreur lors de l'enregistrement dans le fichier JSON : {e}")
 
 
-def afficher_matchs_edmonds(matchs_par_categorie):
+def matchs_edmonds(matchs_par_categorie):
     print("\n")
     print("#######################################################")
     print("################# MATCHS PAR EDMOND ###############")
