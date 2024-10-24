@@ -1,8 +1,17 @@
+"""
+Module pour organiser les matchs par catégories selon l'algorithme d'edmond
+en recherchant un maximum de couples dans un graphe
+"""
+
 import random
 import json
 from Class.Graphe import Graphe #Importation de la classe Graphe, implémenter dans Class/Graphe.py
 
 def recherche_largeur(graphe:Graphe, source, puits, parent) -> bool:
+    """
+    Recherche d'un chemin dans un graphe entre un sommet source et un sommet puit tout en vérifiant
+    que les arêtes ont une capacité disponible (> à 0)
+    """
     visite = {source}
     file = [source]
 
@@ -19,6 +28,9 @@ def recherche_largeur(graphe:Graphe, source, puits, parent) -> bool:
     return False
 
 def edmonds_karp(graphe:Graphe, source, puits):
+    """
+    Calcul du flot maximum entre un sommet source et un sommet puits dans un graphe
+    """
     # Dictionnaire pour stocker le chemin parent pour la reconstruction des chemins
     parent = {}
     # Initialisation du flot maximum à 0
@@ -35,10 +47,10 @@ def edmonds_karp(graphe:Graphe, source, puits):
             # Si le sommet n'a âs de parent, on sort
             if v not in parent:
                 return flot_maximum # Retourne le flot maximum atteint
-            
+
             s = parent[v]  # Récupère le sommet parent de v
             # Mis à jour de la capactié minimale du chemin actuel
-            flot_chemin = min(flot_chemin, graphe.liste_adjacence[s][v]) 
+            flot_chemin = min(flot_chemin, graphe.liste_adjacence[s][v])
             v = s # Remonter au sommet parent
 
         # Mettre à jour les capacités du graphe
@@ -57,6 +69,9 @@ def edmonds_karp(graphe:Graphe, source, puits):
     return flot_maximum # Retourner le flot maximum calculé
 
 def organiser_matchs_par_edmond(joueurs):
+    """
+    Organisation des matchs par edmond
+    """
     # Groupement des joueurs par catégories d'âge et de poids
     groupes = joueurs.groupby(['categorie_age', 'categorie_poids'])
     matchs_par_categorie = {}
@@ -83,8 +98,14 @@ def organiser_matchs_par_edmond(joueurs):
         for i in range(len(joueurs)):
             for j in range(i + 1, len(joueurs)):
                 if joueurs['club'].iloc[i] != joueurs['club'].iloc[j]:
-                    joueur1 = f"{joueurs['prenom'].iloc[i]} {joueurs['nom'].iloc[i]} ({joueurs['club'].iloc[i]})"
-                    joueur2 = f"{joueurs['prenom'].iloc[j]} {joueurs['nom'].iloc[j]} ({joueurs['club'].iloc[j]})"
+                    prenom1=joueurs['prenom'].iloc[i]
+                    prenom2=joueurs['prenom'].iloc[j]
+                    nom1=joueurs['nom'].iloc[i]
+                    nom2=joueurs['nom'].iloc[j]
+                    club1=joueurs['club'].iloc[i]
+                    club2=joueurs['club'].iloc[j]
+                    joueur1 = f"{prenom1} {nom1} ({club1})"
+                    joueur2 = f"{prenom2} {nom2} ({club2})"
                     graphe.ajouter_arete(joueur1, joueur2, 1)
 
         # Ajouter les arêtes entre les joueurs et le puits
@@ -103,16 +124,16 @@ def organiser_matchs_par_edmond(joueurs):
             bye_list.append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
 
         # Trouver les matchs
-        joueurs_utilises = set()
+        utilises = set()
         for _, joueur in joueurs.iterrows():
             joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
-            if joueur_id in joueurs_utilises:
+            if joueur_id in utilises:
                 continue  # Ignorer les joueurs déjà appariés
             for v in graphe.obtenir_voisins(joueur_id):
-                if graphe.liste_adjacence[joueur_id][v] == 0 and v != puits and v not in joueurs_utilises:
+                if graphe.liste_adjacence[joueur_id][v]==0 and v!=puits and v not in utilises:
                     tab_match.append([joueur_id, v])
-                    joueurs_utilises.add(joueur_id)
-                    joueurs_utilises.add(v)
+                    utilises.add(joueur_id)
+                    utilises.add(v)
                     break  # Un match par joueur
 
 
@@ -144,10 +165,8 @@ def json2(matchs_par_categorie, nom_fichier:str) -> None:
 
 
 def matchs_edmonds(matchs_par_categorie):
-    print("\n")
-    print("#######################################################")
-    print("################# MATCHS PAR EDMOND ###############")
-    print("#######################################################")
+    """Organisation des matchs par l'algorithme d'edmond"""
+
     for (cat_age, cat_poids), data in matchs_par_categorie.items():
         print(f"\n{'=' * 40}")
         print(f"Matchs pour la catégorie {cat_age} {cat_poids} : ")
