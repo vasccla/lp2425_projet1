@@ -21,6 +21,8 @@ def organiser_matchs_par_tri_simple(joueurs):
             byes_par_categorie.setdefault((cat_age, cat_poids), []).append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
             joueurs = joueurs.drop(joueur_bye_index)
 
+        joueurs = joueurs.sample(frac=1).reset_index(drop=True)
+
         # Remplissage de la file avec les données joueurs à partir du début de la DF
         for i in range(0, len(joueurs) // 2):
             temp_file.enfiler([joueurs["nom"].iloc[i], joueurs["prenom"].iloc[i], joueurs["club"].iloc[i]])

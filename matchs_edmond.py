@@ -73,6 +73,8 @@ def organiser_matchs_par_edmond(joueurs):
             joueur_bye = joueurs.loc[joueur_bye_index]
             joueurs = joueurs.drop(joueur_bye_index)
 
+        joueurs = joueurs.sample(frac=1).reset_index(drop=True)
+
         for _, joueur in joueurs.iterrows():
             joueur_id = f"{joueur['prenom']} {joueur['nom']} ({joueur['club']})"
             graphe.ajouter_arete(source, joueur_id, 1)
