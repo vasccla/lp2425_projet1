@@ -8,7 +8,8 @@ import sys
 import pandas as pd
 from matchs_tri_simple import organiser_matchs_par_tri_simple, matchs_tri_simple, json1
 from matchs_edmond import organiser_matchs_par_edmond,matchs_edmonds,json2
-from affichageEdmond import affichage_graphique_matchs_Edmond
+from affichage_edmond import affichage_graphique_matchs_edmond
+from affichage_simple import affichage_graphique_matchs_simple
 
 def lire_joueur_ods(fichier_ods: str, nom_feuille: str) -> str:
     """
@@ -138,6 +139,11 @@ def main():
                     match, byes = organiser_matchs_par_tri_simple(joueurs)
                     matchs_tri_simple(match, byes)
 
+                    choix_affichage:str = input("\nVoulez-vous afficher graphiquement les matchs (O/N) : ").lower()
+                    
+                    if choix_affichage == 'o':
+                        affichage_graphique_matchs_simple(match, byes)
+
                     choix_json:str = input("\nVoulez-vous le format json (O/N) : ").lower()
 
                     if choix_json == 'o':
@@ -151,8 +157,7 @@ def main():
                     choix_affichage:str = input("\nVoulez-vous afficher graphiquement les matchs (O/N) : ").lower()
                     
                     if choix_affichage == 'o':
-                        print("Affichage en cours ! Vérifiez que la fenêtre n'est pas minimisée.")
-                        affichage_graphique_matchs_Edmond(match)
+                        affichage_graphique_matchs_edmond(match)
 
                     choix_json:str = input("\nVoulez-vous le format json (O/N) : ").lower()
 

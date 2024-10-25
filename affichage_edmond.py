@@ -1,22 +1,30 @@
 import tkinter as tk
 from tkinter import ttk
 from ttkthemes import ThemedStyle
-def affichage_graphique_matchs_Edmond(matchs):
+
+def affichage_graphique_matchs_edmond(matchs):
     # Création de la fenêtre principale
     root:tk.Tk = tk.Tk()
     root.title(f"Arbre des matchs de l'algoritme de Edmond")
     root.geometry(f"530x235")
     root.resizable(False, False)
+    
+    # Permet de mettre la fenêtre au premier plan 
+    root.lift()
+    root.attributes('-topmost', True)
+
+    # Enlève le fait d'avoir la fenêtre au premier plan
+    root.after(1,lambda: root.attributes('-topmost', False))
 
     # Configuration du style de la fenêtre principale
     style:ThemedStyle = ThemedStyle(root)
     style.set_theme("scidpink")
-    matchs_par_categorie:dict = matchs
 
     # Création des onglets
     notebook_principal:ttk.Notebook = ttk.Notebook(root)
 
     # Séparation de la catégorie d'âge et du poids pour permettre de faire un rangement par onglet d'âge puis par poids
+    matchs_par_categorie:dict = matchs
     categorie_age_dict:dict = {}
     for (cat_age, cat_poids), data in matchs_par_categorie.items():
         if cat_age not in categorie_age_dict:
@@ -35,7 +43,6 @@ def affichage_graphique_matchs_Edmond(matchs):
 
         # Parcours des catégories de poids
         for cat_poids, data in sous_cat:
-
             # Création des onglets (catégorie de poids)
             onglet_poids:tk.Frame = tk.Frame(notebook_secondaire)
             onglet_poids.pack(padx=20, pady=20, fill="both", expand=True)   
