@@ -70,16 +70,16 @@ def affichage_graphique_matchs_edmond(matchs):
             
             # Affichage des matchs
             if data['byes'] != []:
-                tk.Label(frame_match, text="Byes : "+", ".join(data['byes']), font=('Century Gothic','10')).pack()
+                tk.Label(frame_match, text="Bye : "+", ".join(data['byes']), font=('Century Gothic','10'), justify="center").pack()
             if data['matches'] != []:
                 count:int = 0
                 for match in data['matches']:
                     count += 1
                     j1:str = match[0]
                     j2:str = match[1]
-                    tk.Label(frame_match, text=f"Match n°{count} : {j1} vs {j2}",font=('Century Gothic','10')).pack()
+                    tk.Label(frame_match, text=f"Match n°{count} : {j1} vs {j2}",font=('Century Gothic','10'), justify="center").pack()
             else:
-                tk.Label(frame_match, text="Aucun match.",font=('Century Gothic','10')).pack()
+                tk.Label(frame_match, text="Aucun match.",font=('Century Gothic','10'), justify="center" ).pack()
 
             # Obligation d'un espace à la fin de chaque regroupement de match car bug empêchant la scrollbar d'apparaître si trop peu de données
             if count < 7 :
