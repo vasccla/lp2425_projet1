@@ -13,6 +13,7 @@ Installer pandas via la commande : `pip install pandas`
 
 Pour la lecture de fichier .ods, veuillez installer odfpy : `pip install odfpy`
 
+Pour l'affichage graphique, installez : `pip install tkinter` et `pip install ttkthemes`
 
 ## UTILISATION : 
 

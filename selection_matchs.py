@@ -8,7 +8,7 @@ import sys
 import pandas as pd
 from matchs_tri_simple import organiser_matchs_par_tri_simple, matchs_tri_simple, json1
 from matchs_edmond import organiser_matchs_par_edmond,matchs_edmonds,json2
-
+from affichageEdmond import affichage_graphique_matchs_Edmond
 
 def lire_joueur_ods(fichier_ods: str, nom_feuille: str) -> str:
     """
@@ -147,6 +147,12 @@ def main():
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
                     matchs_edmonds(match)
+
+                    choix_affichage:str = input("\nVoulez-vous afficher graphiquement les matchs (O/N) : ").lower()
+                    
+                    if choix_affichage == 'o':
+                        print("Affichage en cours ! Vérifiez que la fenêtre n'est pas minimisée.")
+                        affichage_graphique_matchs_Edmond(match)
 
                     choix_json:str = input("\nVoulez-vous le format json (O/N) : ").lower()
 
