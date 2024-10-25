@@ -19,29 +19,30 @@ def organiser_matchs_par_tri_simple(joueurs):
     for (cat_age, cat_poids), joueur in groupes:
         temp_pile:Pile = Pile()
         temp_file:File = File()
-        tab = []
 
         if len(joueur) % 2 != 0:
             joueur_bye_index = random.choice(joueur.index)
             joueur_bye = joueur.loc[joueur_bye_index]
             byes_par_categorie.setdefault((cat_age, cat_poids), []).append(f"{joueur_bye['nom']} {joueur_bye['prenom']} ({joueur_bye['club']})")
-            joueurs = joueur.drop(joueur_bye_index)
+            joueur = joueur.drop(joueur_bye_index)
 
-        joueurs = joueur.sample(frac=1).reset_index(drop=True)
+        joueurs_restant = joueur.sample(frac=1).reset_index(drop=True)
 
         # Remplissage de la file avec les données joueurs à partir du début de la DF
-        for i in range(0, len(joueurs) // 2):
-            nom1=joueurs["nom"].iloc[i]
-            prenom1=joueurs["prenom"].iloc[i]
-            club1=joueurs["club"].iloc[i]
+        for i in range(0, len(joueurs_restant) // 2):
+            nom1 = joueurs_restant["nom"].iloc[i]
+            prenom1 = joueurs_restant["prenom"].iloc[i]
+            club1 = joueurs_restant["club"].iloc[i]
             temp_file.enfiler([nom1, prenom1, club1])
+
         # Remplissage de la pile avec les données joueurs à partir de la moitié de la DF
-        for i in range(len(joueurs) // 2, len(joueurs)):
-            nom1=joueurs["nom"].iloc[i]
-            prenom1=joueurs["prenom"].iloc[i]
-            club1=joueurs["club"].iloc[i]
+        for i in range(len(joueurs_restant) // 2, len(joueurs_restant)):
+            nom1 = joueurs_restant["nom"].iloc[i]
+            prenom1 = joueurs_restant["prenom"].iloc[i]
+            club1 = joueurs_restant["club"].iloc[i]
             temp_pile.empiler([nom1, prenom1, club1])
 
+        tab = []
         while len(temp_file.afficher()) != 0 and len(temp_pile.afficher()) != 0:
             tab.append([temp_file.defiler(), temp_pile.depiler()])
 
