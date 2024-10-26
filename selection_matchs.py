@@ -137,7 +137,7 @@ def main():
 
                 if choix == '1':
                     match, byes = organiser_matchs_par_tri_simple(joueurs)
-                    matchs_tri_simple(match, byes)
+                    # matchs_tri_simple(match, byes)
 
                     choix_affichage:str = input("\nVoulez-vous afficher graphiquement les matchs (O/N) : ").lower()
                     
@@ -152,7 +152,7 @@ def main():
 
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
-                    matchs_edmonds(match)
+                    # matchs_edmonds(match)
 
                     choix_affichage:str = input("\nVoulez-vous afficher graphiquement les matchs (O/N) : ").lower()
                     
