@@ -27,7 +27,7 @@ def recherche_largeur(graphe:Graphe, source, puits, parent) -> bool:
                 file.append(voisin)
     return False
 
-def edmonds_karp(graphe:Graphe, source, puits):
+def flot_max(graphe:Graphe, source, puits):
     """
     Calcul du flot maximum entre un sommet source et un sommet puits dans un graphe
     """
@@ -114,7 +114,7 @@ def organiser_matchs_par_edmond(joueurs):
             graphe.ajouter_arete(joueur_id, puits, 1)
 
         # Calculer le flot maximum
-        edmonds_karp(graphe, source, puits)
+        flot_max(graphe, source, puits)
 
         tab_match = []
         bye_list = []
