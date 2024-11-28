@@ -98,6 +98,10 @@ def lecture_joueurs_et_categories(fichier_joueurs:str, fichier_categories:str):
 
     try:
         joueurs[['categorie_age', 'categorie_poids']] = joueurs.apply(assigner_categorie, axis=1, result_type='expand')
+        joueurs['nb_joueurs_club'] = joueurs.groupby(['categorie_age', 'categorie_poids', 'club'])['nom'].transform('count')
+    
+        for (cat_age, cat_poids), group in joueurs.groupby(['categorie_age', 'categorie_poids']):
+            group = group.sort_values(by='nb_joueurs_club', ascending=False)
     except Exception as e:
         print(f"Erreur lors du traitement des joueurs : {e}")
         return None
@@ -137,7 +141,7 @@ def main():
 
                 if choix == '1':
                     match, byes = organiser_matchs_par_tri_simple(joueurs)
-                    # matchs_tri_simple(match, byes)
+                    matchs_tri_simple(match, byes)
 
                     choix_affichage:str = input("\nVoulez-vous afficher graphiquement les matchs (O/N) : ").lower()
                     
@@ -152,7 +156,7 @@ def main():
 
                 elif choix == '2':
                     match = organiser_matchs_par_edmond(joueurs)
-                    # matchs_edmonds(match)
+                    matchs_edmonds(match)
 
                     choix_affichage:str = input("\nVoulez-vous afficher graphiquement les matchs (O/N) : ").lower()
                     
